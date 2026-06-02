@@ -75,7 +75,7 @@ app.listen(port, () => {
 // --- ROUTE: Home Page ---
 app.get('/', async (req, res) => {
     try {
-        const [products] = await pool.query('SELECT * FROM PRODUCT');
+        const [products] = await pool.query('SELECT * FROM product');
         // We pass the session user to index so the Navbar knows if they are logged in!
         res.render('index', { products: products, user: req.session.user }); 
     } catch (err) {
@@ -95,9 +95,9 @@ app.post('/request-otp', async (req, res) => {
     const expiryTime = new Date(Date.now() + 15 * 60000); 
 
     try {
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [email]);
         if (users.length > 0) {
-            await pool.query('UPDATE CUSTOMER SET OTP_Code = ?, OTP_Expiry = ? WHERE Email = ?', [otpCode, expiryTime, email]);
+            await pool.query('UPDATE customer SET OTP_Code = ?, OTP_Expiry = ? WHERE Email = ?', [otpCode, expiryTime, email]);
         } else {
             tempOTPStore.set(email, { otpCode: otpCode, expiryTime: expiryTime });
         }
@@ -141,10 +141,10 @@ app.post('/verify-otp', async (req, res) => {
         }
 
         // 2. EXISTING USER FLOW
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ? AND OTP_Code = ? AND OTP_Expiry > NOW()', [email, otp_code]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ? AND OTP_Code = ? AND OTP_Expiry > NOW()', [email, otp_code]);
         
         if (users.length > 0) {
-            await pool.query('UPDATE CUSTOMER SET OTP_Code = NULL, OTP_Expiry = NULL WHERE Email = ?', [email]);
+            await pool.query('UPDATE customer SET OTP_Code = NULL, OTP_Expiry = NULL WHERE Email = ?', [email]);
             req.session.userEmail = email; // Save to memory!
             req.session.user = users[0];   // Save the full user object
             return res.redirect('/dashboard'); // Use redirect so the URL looks clean
@@ -196,16 +196,16 @@ app.post('/complete-onboarding', async (req, res) => {
     try {
         // 3. Update the SQL to insert BOTH F_name and L_name
         const [result] = await pool.query(
-            'INSERT INTO CUSTOMER (Company_Name, F_name, L_name, Email) VALUES (?, ?, ?, ?)',
+            'INSERT INTO customer (Company_Name, F_name, L_name, Email) VALUES (?, ?, ?, ?)',
             [company_name, f_name, l_name, email]
         );
 
         // 4. Save phone number to 3NF table
         const newCustId = result.insertId;
-        await pool.query('INSERT INTO CUSTOMER_PHONE (Cust_ID, Phone_Number) VALUES (?, ?)', [newCustId, phone]);
+        await pool.query('INSERT INTO customer_PHONE (Cust_ID, Phone_Number) VALUES (?, ?)', [newCustId, phone]);
 
         // 5. Fetch fresh user and update session
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [email]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [email]);
         req.session.user = users[0];
         
         res.redirect('/dashboard'); 
@@ -223,7 +223,7 @@ app.get('/dashboard', async (req, res) => {
     }
 
     try {
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
         
         res.render('dashboard', { 
             user: users[0], 
@@ -244,10 +244,10 @@ app.get('/dashboard/products', async (req, res) => {
 
     try {
         // 1. Get the current user
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
         
         // 2. Fetch all products from your 3NF Database
-        const [products] = await pool.query('SELECT * FROM PRODUCT');
+        const [products] = await pool.query('SELECT * FROM product');
 
         // 3. Render the new page, passing user, products, and cart
         res.render('dashboard-products', {
@@ -267,14 +267,14 @@ app.get('/dashboard/products/:id', async (req, res) => {
     if (!req.session.userEmail) return res.redirect('/portal');
 
     try {
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
-        const [products] = await pool.query('SELECT * FROM PRODUCT WHERE Product_ID = ?', [req.params.id]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
+        const [products] = await pool.query('SELECT * FROM product WHERE Product_ID = ?', [req.params.id]);
 
         if (!products.length) return res.redirect('/dashboard/products');
 
-        const [specs] = await pool.query('SELECT * FROM SPEC_ITEM WHERE Product_ID = ?', [req.params.id]);
-        const [features] = await pool.query('SELECT * FROM PRODUCT_FEATURE WHERE Product_ID = ?', [req.params.id]);
-        const [applications] = await pool.query('SELECT * FROM PRODUCT_APPLICATION WHERE Product_ID = ?', [req.params.id]);
+        const [specs] = await pool.query('SELECT * FROM spec_item WHERE Product_ID = ?', [req.params.id]);
+        const [features] = await pool.query('SELECT * FROM product_FEATURE WHERE Product_ID = ?', [req.params.id]);
+        const [applications] = await pool.query('SELECT * FROM product_APPLICATION WHERE Product_ID = ?', [req.params.id]);
 
         res.render('dashboard-product-detail', {
             user: users[0],
@@ -295,17 +295,17 @@ app.get('/dashboard/history/:id', async (req, res) => {
     if (!req.session.userEmail) return res.redirect('/portal');
 
     try {
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
         const [orders] = await pool.query(
-            'SELECT * FROM SALES_ORDER WHERE Order_ID = ? AND Cust_ID = ?',
+            'SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ?',
             [req.params.id, users[0].Cust_ID]
         );
         if (!orders.length) return res.redirect('/dashboard/history');
 
         const [details] = await pool.query(`
             SELECT od.*, p.Product_Name, p.Img_Url
-            FROM ORDER_DETAIL od
-            JOIN PRODUCT p ON od.Product_ID = p.Product_ID
+            FROM order_detail od
+            JOIN product p ON od.Product_ID = p.Product_ID
             WHERE od.Order_ID = ?
         `, [req.params.id]);
 
@@ -334,7 +334,7 @@ app.get('/dashboard/history', async (req, res) => {
 
     try {
         // 1. Get the current user
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
         const currentUser = users[0];
 
         // 2. The Master SQL Query
@@ -347,8 +347,8 @@ app.get('/dashboard/history', async (req, res) => {
                 o.Order_Status AS status,
                 COUNT(od.Product_ID) AS items,
                 SUM(od.Quantity * od.Selling_Price) AS raw_total
-            FROM SALES_ORDER o
-            LEFT JOIN ORDER_DETAIL od ON o.Order_ID = od.Order_ID
+            FROM sales_order o
+            LEFT JOIN order_detail od ON o.Order_ID = od.Order_ID
             WHERE o.Cust_ID = ?
             GROUP BY o.Order_ID
             ORDER BY o.Order_Date DESC
@@ -401,7 +401,7 @@ app.post('/submit-final-request', async (req, res) => {
 
     try {
         // Ambil Cust_ID dari database berdasarkan email
-        const [users] = await connection.query('SELECT Cust_ID FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
+        const [users] = await connection.query('SELECT Cust_ID FROM customer WHERE Email = ?', [req.session.userEmail]);
         const custId = users[0].Cust_ID;
 
         // MULAI TRANSACTION DATABASE
@@ -410,7 +410,7 @@ app.post('/submit-final-request', async (req, res) => {
         // 2. Insert ke SALES_ORDER (Tabel Induk)
         const notes = req.body.notes ? req.body.notes.trim() : null;
         const [orderResult] = await connection.query(
-            'INSERT INTO SALES_ORDER (Cust_ID, Order_Status, Order_Source, Notes) VALUES (?, ?, ?, ?)',
+            'INSERT INTO sales_order (Cust_ID, Order_Status, Order_Source, Notes) VALUES (?, ?, ?, ?)',
             [custId, 'Pending Review', 'Portal Web', notes]
         );
         
@@ -420,7 +420,7 @@ app.post('/submit-final-request', async (req, res) => {
         // 3. Loop isi keranjang dan Insert ke ORDER_DETAIL (Tabel Bridge)
         for (const item of req.session.cart) {
             await connection.query(
-                'INSERT INTO ORDER_DETAIL (Order_ID, Product_ID, Quantity, Selling_Price) VALUES (?, ?, ?, ?)',
+                'INSERT INTO order_detail (Order_ID, Product_ID, Quantity, Selling_Price) VALUES (?, ?, ?, ?)',
                 // Harga kita set 0.00 dulu karena ini masih "Minta Penawaran Harga" (Admin akan update nanti)
                 [newOrderId, item.id, item.qty, 0.00] 
             );
@@ -469,14 +469,14 @@ app.get('/dashboard/cart', async (req, res) => {
     if (!req.session.userEmail) return res.redirect('/portal');
 
     try {
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
         const cart = req.session.cart || [];
 
         // Enrich cart with product images from DB
         let enrichedCart = cart;
         if (cart.length > 0) {
             const ids = cart.map(i => i.id);
-            const [products] = await pool.query('SELECT Product_ID, Img_Url FROM PRODUCT WHERE Product_ID IN (?)', [ids]);
+            const [products] = await pool.query('SELECT Product_ID, Img_Url FROM product WHERE Product_ID IN (?)', [ids]);
             const imgMap = {};
             products.forEach(p => { imgMap[p.Product_ID] = p.Img_Url; });
             enrichedCart = cart.map(i => ({ ...i, img: imgMap[i.id] || null }));
@@ -513,14 +513,14 @@ app.get('/dashboard/payment/:id', async (req, res) => {
     if (!req.session.userEmail) return res.redirect('/portal');
 
     try {
-        const [users] = await pool.query('SELECT * FROM CUSTOMER WHERE Email = ?', [req.session.userEmail]);
-        const [orders] = await pool.query('SELECT * FROM SALES_ORDER WHERE Order_ID = ? AND Cust_ID = ?', [req.params.id, users[0].Cust_ID]);
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
+        const [orders] = await pool.query('SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ?', [req.params.id, users[0].Cust_ID]);
 
         if (!orders.length || orders[0].Order_Status !== 'Selesai') return res.redirect('/dashboard/history');
 
         const [details] = await pool.query(`
-            SELECT od.*, p.Product_Name FROM ORDER_DETAIL od
-            JOIN PRODUCT p ON od.Product_ID = p.Product_ID
+            SELECT od.*, p.Product_Name FROM order_detail od
+            JOIN product p ON od.Product_ID = p.Product_ID
             WHERE od.Order_ID = ?
         `, [req.params.id]);
 
@@ -585,14 +585,14 @@ app.get('/admin/dashboard', async (req, res) => {
 
     try {
         // Ambil metrik untuk ringkasan di dashboard
-        const [productCount]  = await pool.query('SELECT COUNT(*) as total FROM PRODUCT');
-        const [pendingCount]  = await pool.query('SELECT COUNT(*) as total FROM SALES_ORDER WHERE Order_Status = "Pending Review"');
-        const [customerCount] = await pool.query('SELECT COUNT(*) as total FROM CUSTOMER');
+        const [productCount]  = await pool.query('SELECT COUNT(*) as total FROM product');
+        const [pendingCount]  = await pool.query('SELECT COUNT(*) as total FROM sales_order WHERE Order_Status = "Pending Review"');
+        const [customerCount] = await pool.query('SELECT COUNT(*) as total FROM customer');
 
         const [recentOrders] = await pool.query(`
             SELECT o.Order_ID, c.Company_Name, o.Order_Date, o.Order_Status
-            FROM SALES_ORDER o
-            JOIN CUSTOMER c ON o.Cust_ID = c.Cust_ID
+            FROM sales_order o
+            JOIN customer c ON o.Cust_ID = c.Cust_ID
             ORDER BY o.Order_Date DESC LIMIT 8
         `);
 
@@ -702,9 +702,9 @@ app.get('/admin/requests', async (req, res) => {
             o.Order_Date, 
             o.Order_Status,
             COUNT(od.Product_ID) AS total_items
-        FROM SALES_ORDER o
-        JOIN CUSTOMER c ON o.Cust_ID = c.Cust_ID
-        LEFT JOIN ORDER_DETAIL od ON o.Order_ID = od.Order_ID
+        FROM sales_order o
+        JOIN customer c ON o.Cust_ID = c.Cust_ID
+        LEFT JOIN order_detail od ON o.Order_ID = od.Order_ID
     `;
     
     const queryParams = [];
@@ -762,9 +762,9 @@ app.get('/admin/requests/:id', async (req, res) => {
         // PERBAIKAN: Mengganti c.Phone_Number menjadi cp.Phone_Number
         const [orders] = await pool.query(`
             SELECT o.*, c.Company_Name, c.F_name, c.Email, cp.Phone_Number 
-            FROM SALES_ORDER o
-            JOIN CUSTOMER c ON o.Cust_ID = c.Cust_ID
-            LEFT JOIN CUSTOMER_PHONE cp ON c.Cust_ID = cp.Cust_ID
+            FROM sales_order o
+            JOIN customer c ON o.Cust_ID = c.Cust_ID
+            LEFT JOIN customer_phone cp ON c.Cust_ID = cp.Cust_ID
             WHERE o.Order_ID = ?
         `, [orderId]);
 
@@ -772,8 +772,8 @@ app.get('/admin/requests/:id', async (req, res) => {
 
         const [details] = await pool.query(`
             SELECT od.*, p.Product_Name, p.Img_Url, p.Unit_Price
-            FROM ORDER_DETAIL od
-            JOIN PRODUCT p ON od.Product_ID = p.Product_ID
+            FROM order_detail od
+            JOIN product p ON od.Product_ID = p.Product_ID
             WHERE od.Order_ID = ?
         `, [orderId]);
 
@@ -811,14 +811,14 @@ app.post('/admin/requests/:id/price', async (req, res) => {
             const cleanPrice = prices[i].replace(/[^0-9]/g, '');
             
             await connection.query(
-                'UPDATE ORDER_DETAIL SET Selling_Price = ? WHERE Order_ID = ? AND Product_ID = ?',
+                'UPDATE order_detail SET Selling_Price = ? WHERE Order_ID = ? AND Product_ID = ?',
                 [cleanPrice || 0, orderId, pIds[i]]
             );
         }
 
         // 2. Update status tabel utama menjadi 'Selesai'
         await connection.query(
-            'UPDATE SALES_ORDER SET Order_Status = "Selesai" WHERE Order_ID = ?',
+            'UPDATE sales_order SET Order_Status = "Selesai" WHERE Order_ID = ?',
             [orderId]
         );
 
@@ -977,9 +977,9 @@ app.get('/admin/customers', async (req, res) => {
                 c.Email,
                 GROUP_CONCAT(DISTINCT cp.Phone_Number SEPARATOR ', ') AS Phones,
                 COUNT(DISTINCT o.Order_ID) AS Total_Orders
-            FROM CUSTOMER c
-            LEFT JOIN CUSTOMER_PHONE cp ON c.Cust_ID = cp.Cust_ID
-            LEFT JOIN SALES_ORDER o ON c.Cust_ID = o.Cust_ID
+            FROM customer c
+            LEFT JOIN customer_phone cp ON c.Cust_ID = cp.Cust_ID
+            LEFT JOIN sales_order o ON c.Cust_ID = o.Cust_ID
             GROUP BY c.Cust_ID
             ORDER BY c.Cust_ID DESC
         `);
