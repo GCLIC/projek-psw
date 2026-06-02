@@ -7,6 +7,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const sharp = require('sharp');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,39 +18,34 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// NEW: Configure the Session
 app.use(session({
     secret: process.env.SESSION_SECRET || 'trimas_b2b_secret_key',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 } // Remembers them for 24 hours
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// --- Multer: Image Upload to public/images/ ---
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, 'public', 'images'));
-    },
-    filename: (req, file, cb) => {
-        // Sanitize: lowercase, spaces→hyphens, keep extension
-        const ext = path.extname(file.originalname).toLowerCase();
-        const base = path.basename(file.originalname, ext)
-            .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
-        cb(null, base + ext);
+// --- Multer: memory storage, sharp resizes to 600x600 before saving ---
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if (/\.(jpe?g|png|webp)$/i.test(file.originalname)) cb(null, true);
+        else cb(new Error('Hanya file gambar (JPG, PNG, WEBP) yang diizinkan.'));
     }
 });
 
-const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-    fileFilter: (req, file, cb) => {
-        if (/\.(jpe?g|png|webp)$/i.test(file.originalname)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Hanya file gambar (JPG, PNG, WEBP) yang diizinkan.'));
-        }
-    }
-});
+async function saveImage(file) {
+    const base = path.basename(file.originalname, path.extname(file.originalname))
+        .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
+    const filename = base + '.webp';
+    const dest = path.join(__dirname, 'public', 'images', filename);
+    await sharp(file.buffer)
+        .resize(600, 600, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+        .webp({ quality: 85 })
+        .toFile(dest);
+    return filename;
+}
 
 const mailer = nodemailer.createTransport({
     service: 'gmail',
@@ -273,8 +269,8 @@ app.get('/dashboard/products/:id', async (req, res) => {
         if (!products.length) return res.redirect('/dashboard/products');
 
         const [specs] = await pool.query('SELECT * FROM spec_item WHERE Product_ID = ?', [req.params.id]);
-        const [features] = await pool.query('SELECT * FROM product_FEATURE WHERE Product_ID = ?', [req.params.id]);
-        const [applications] = await pool.query('SELECT * FROM product_APPLICATION WHERE Product_ID = ?', [req.params.id]);
+        const [features] = await pool.query('SELECT * FROM product_feature WHERE Product_ID = ?', [req.params.id]);
+        const [applications] = await pool.query('SELECT * FROM product_application WHERE Product_ID = ?', [req.params.id]);
 
         res.render('dashboard-product-detail', {
             user: users[0],
@@ -335,13 +331,10 @@ app.get('/dashboard/history', async (req, res) => {
     try {
         // 1. Get the current user
         const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
-        const currentUser = users[0];
+        const user = users[0];
 
-        // 2. The Master SQL Query
-        // This joins the ORDER and ORDER_DETAIL tables, formats the date, 
-        // counts the items, and calculates the total value mathematically.
         const [dbHistory] = await pool.query(`
-            SELECT 
+            SELECT
                 o.Order_ID AS id,
                 DATE_FORMAT(o.Order_Date, '%d %b %Y') AS date,
                 o.Order_Status AS status,
@@ -352,34 +345,30 @@ app.get('/dashboard/history', async (req, res) => {
             WHERE o.Cust_ID = ?
             GROUP BY o.Order_ID
             ORDER BY o.Order_Date DESC
-        `, [currentUser.Cust_ID]);
+        `, [user.Cust_ID]);
 
-        // 3. Format the data for the frontend (Colors and Currency)
-        const formattedHistory = dbHistory.map(req => {
-            // Determine badge color based on status
+        const formattedHistory = dbHistory.map(row => {
             let badgeColor = 'warning';
-            if (req.status === 'Selesai') badgeColor = 'success';
-            if (req.status === 'Dibatalkan') badgeColor = 'danger';
+            if (row.status === 'Selesai') badgeColor = 'success';
+            if (row.status === 'Dibatalkan') badgeColor = 'danger';
 
-            // Format the total value into Rupiah
-            const formattedTotal = req.raw_total 
-                ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(req.raw_total)
+            const formattedTotal = row.raw_total
+                ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(row.raw_total)
                 : 'Menunggu Penawaran';
 
             return {
-                id: `REQ-${req.id}`,
-                date: req.date,
-                items: req.items,
+                id: `REQ-${row.id}`,
+                date: row.date,
+                items: row.items,
                 total_value: formattedTotal,
-                status: req.status,
+                status: row.status,
                 color: badgeColor
             };
         });
 
-        // 4. Send to the EJS template
-        res.render('dashboard-history', { 
-            user: currentUser,
-            cart: req.session.cart || [], 
+        res.render('dashboard-history', {
+            user: user,
+            cart: req.session.cart || [],
             history: formattedHistory
         });
 
@@ -586,7 +575,7 @@ app.get('/admin/dashboard', async (req, res) => {
     try {
         // Ambil metrik untuk ringkasan di dashboard
         const [productCount]  = await pool.query('SELECT COUNT(*) as total FROM product');
-        const [pendingCount]  = await pool.query('SELECT COUNT(*) as total FROM sales_order WHERE Order_Status = "Pending Review"');
+        const [pendingCount]  = await pool.query("SELECT COUNT(*) as total FROM sales_order WHERE Order_Status = 'Pending Review'");
         const [customerCount] = await pool.query('SELECT COUNT(*) as total FROM customer');
 
         const [recentOrders] = await pool.query(`
@@ -629,8 +618,7 @@ app.post('/admin/products/add', (req, res, next) => {
 }, upload.single('product_image'), async (req, res) => {
     // 1. Ambil data utama
     const { product_name, short_desc, stock, unit_price } = req.body;
-    // Use uploaded file name if present, otherwise fallback to typed img_url field
-    const img_url = req.file ? req.file.filename : (req.body.img_url || null);
+    const img_url = req.file ? await saveImage(req.file) : (req.body.img_url || null);
     
     // 2. Ambil data array (Pastikan selalu menjadi array walaupun isinya cuma 1)
     const features = [].concat(req.body.features || []).filter(item => item.trim() !== '');
@@ -818,7 +806,7 @@ app.post('/admin/requests/:id/price', async (req, res) => {
 
         // 2. Update status tabel utama menjadi 'Selesai'
         await connection.query(
-            'UPDATE sales_order SET Order_Status = "Selesai" WHERE Order_ID = ?',
+            "UPDATE sales_order SET Order_Status = 'Selesai' WHERE Order_ID = ?",
             [orderId]
         );
 
@@ -914,8 +902,7 @@ app.post('/admin/products/edit/:id', (req, res, next) => {
 }, upload.single('product_image'), async (req, res) => {
     const productId = req.params.id;
     const { product_name, short_desc, stock, unit_price, existing_img } = req.body;
-    // Use new upload if provided, otherwise keep the existing filename from the hidden field
-    const img_url = req.file ? req.file.filename : (existing_img || null);
+    const img_url = req.file ? await saveImage(req.file) : (existing_img || null);
     
     const features = [].concat(req.body.features || []).filter(item => item.trim() !== '');
     const applications = [].concat(req.body.applications || []).filter(item => item.trim() !== '');
