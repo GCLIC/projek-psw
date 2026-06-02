@@ -10,6 +10,10 @@ const { BrevoClient } = require('@getbrevo/brevo');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Ensure images directory exists (important on Railway ephemeral filesystem)
+const imagesDir = path.join(__dirname, 'public', 'images');
+if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
 const tempOTPStore = new Map();
 const bcrypt = require('bcrypt');
 
