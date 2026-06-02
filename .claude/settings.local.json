@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm install *)",
-      "Bash(findstr /I \"trimas\" server.js)"
+      "Bash(findstr /I \"trimas\" server.js)",
+      "Bash(grep -v \"//\\\\|console\\\\|Error\\\\|Warning\")"
     ]
   }
 }
