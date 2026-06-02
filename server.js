@@ -189,21 +189,36 @@ app.post('/complete-onboarding', async (req, res) => {
     }
 
     try {
-        // 3. Update the SQL to insert BOTH F_name and L_name
-        const [result] = await pool.query(
-            'INSERT INTO customer (Company_Name, F_name, L_name, Email) VALUES (?, ?, ?, ?)',
-            [company_name, f_name, l_name, email]
+        // Check if customer already exists (duplicate email from failed previous attempt)
+        const [existing] = await pool.query('SELECT * FROM customer WHERE Email = ?', [email]);
+
+        let custId;
+        if (existing.length > 0) {
+            // Update existing record instead of inserting
+            custId = existing[0].Cust_ID;
+            await pool.query(
+                'UPDATE customer SET Company_Name=?, F_name=?, L_name=? WHERE Cust_ID=?',
+                [company_name, f_name, l_name, custId]
+            );
+        } else {
+            const [result] = await pool.query(
+                'INSERT INTO customer (Company_Name, F_name, L_name, Email) VALUES (?, ?, ?, ?)',
+                [company_name, f_name, l_name, email]
+            );
+            custId = result.insertId;
+        }
+
+        // Save phone (ignore duplicate)
+        await pool.query(
+            'INSERT INTO customer_phone (Cust_ID, Phone_Number) VALUES (?, ?) ON DUPLICATE KEY UPDATE Phone_Number=VALUES(Phone_Number)',
+            [custId, phone]
         );
 
-        // 4. Save phone number to 3NF table
-        const newCustId = result.insertId;
-        await pool.query('INSERT INTO customer_PHONE (Cust_ID, Phone_Number) VALUES (?, ?)', [newCustId, phone]);
-
-        // 5. Fetch fresh user and update session
+        // Fetch fresh user and update session
         const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [email]);
         req.session.user = users[0];
-        
-        res.redirect('/dashboard'); 
+
+        res.redirect('/dashboard');
     } catch (err) {
         console.error(err);
         res.status(500).send("Database Error");
