@@ -7,7 +7,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
-const sharp = require('sharp');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -25,27 +24,27 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// --- Multer: memory storage, sharp resizes to 600x600 before saving ---
+// --- Multer: Image Upload to public/images/ ---
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'public', 'images'));
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        const base = path.basename(file.originalname, ext)
+            .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
+        cb(null, base + ext);
+    }
+});
+
 const upload = multer({
-    storage: multer.memoryStorage(),
+    storage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         if (/\.(jpe?g|png|webp)$/i.test(file.originalname)) cb(null, true);
         else cb(new Error('Hanya file gambar (JPG, PNG, WEBP) yang diizinkan.'));
     }
 });
-
-async function saveImage(file) {
-    const base = path.basename(file.originalname, path.extname(file.originalname))
-        .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
-    const filename = base + '.webp';
-    const dest = path.join(__dirname, 'public', 'images', filename);
-    await sharp(file.buffer)
-        .resize(600, 600, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
-        .webp({ quality: 85 })
-        .toFile(dest);
-    return filename;
-}
 
 const mailer = nodemailer.createTransport({
     service: 'gmail',
@@ -618,7 +617,7 @@ app.post('/admin/products/add', (req, res, next) => {
 }, upload.single('product_image'), async (req, res) => {
     // 1. Ambil data utama
     const { product_name, short_desc, stock, unit_price } = req.body;
-    const img_url = req.file ? await saveImage(req.file) : (req.body.img_url || null);
+    const img_url = req.file ? req.file.filename : (req.body.img_url || null);
     
     // 2. Ambil data array (Pastikan selalu menjadi array walaupun isinya cuma 1)
     const features = [].concat(req.body.features || []).filter(item => item.trim() !== '');
@@ -902,7 +901,7 @@ app.post('/admin/products/edit/:id', (req, res, next) => {
 }, upload.single('product_image'), async (req, res) => {
     const productId = req.params.id;
     const { product_name, short_desc, stock, unit_price, existing_img } = req.body;
-    const img_url = req.file ? await saveImage(req.file) : (existing_img || null);
+    const img_url = req.file ? req.file.filename : (existing_img || null);
     
     const features = [].concat(req.body.features || []).filter(item => item.trim() !== '');
     const applications = [].concat(req.body.applications || []).filter(item => item.trim() !== '');
