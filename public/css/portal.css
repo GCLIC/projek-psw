@@ -422,14 +422,51 @@ html[data-theme="dark"] .bottom-nav { background: #0d1e33; border-color: rgba(25
 /* ── Responsive ── */
 @media (max-width: 767px) {
   .sidebar { display: none; }
-  .main-content { margin-left: 0; padding: 4.5rem 1rem 5rem; }
+  .main-content { margin-left: 0; padding: 4.5rem 1rem 5.5rem; }
   .mobile-topbar { display: flex; }
   .bottom-nav { display: flex; }
-  .page-header { margin-bottom: 1.25rem; padding-bottom: 1rem; }
+  .page-header { margin-bottom: 1.25rem; padding-bottom: 1rem; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
   .page-title { font-size: 1.2rem; }
+  .page-sub { font-size: 0.8rem; }
   .hide-mobile { display: none !important; }
+
+  /* Bigger tap targets for buttons */
+  .btn-accent, .btn-ghost, .btn-outline-accent {
+    min-height: 44px; padding: 0.65rem 1.1rem; font-size: 0.875rem;
+  }
+
+  /* Cards full width */
+  .card-box, .data-card, .info-card { border-radius: 10px; }
+
+  /* Stat cards smaller on mobile */
+  .stat-card { padding: 0.9rem 1rem; }
+  .stat-card-value { font-size: 1.5rem; }
+
+  /* Tables: scroll horizontally */
+  .data-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table table { min-width: 520px; }
+  .data-table th, .data-table td { font-size: 0.8rem; padding: 0.6rem 0.75rem; white-space: nowrap; }
+
+  /* Form controls bigger for touch */
+  .form-control, .input-field { font-size: 1rem !important; min-height: 44px; }
+  .input-group-custom { min-height: 44px; }
+
+  /* Modal full width */
+  .modal-dialog { margin: 0.5rem; }
+  .modal-content { border-radius: 14px !important; }
+
+  /* Bottom nav labels smaller */
+  .bnav-item { font-size: 0.58rem; padding: 0.35rem 0.5rem; }
+  .bnav-item i { font-size: 1.1rem; }
 }
 
 @media (min-width: 768px) {
   .hide-desktop { display: none !important; }
+}
+
+/* ── Touch-friendly tap targets globally ── */
+@media (hover: none) and (pointer: coarse) {
+  .sidebar-link { min-height: 44px; }
+  .btn-accent, .btn-ghost { min-height: 44px; }
+  .qty-btn { width: 36px; height: 36px; }
 }
