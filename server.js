@@ -6,7 +6,7 @@ const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { TransactionalEmailsApi, SendSmtpEmail, ApiClient } = require('@getbrevo/brevo');
+const { BrevoClient } = require('@getbrevo/brevo');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -46,25 +46,24 @@ const upload = multer({
     }
 });
 
-const brevoClient = new TransactionalEmailsApi();
-brevoClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+const brevoClient = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
 
 async function sendOTPEmail(toEmail, otpCode) {
-    const email = new SendSmtpEmail();
-    email.sender = { name: 'PT Trimas Mitra Perkasa', email: process.env.MAIL_USER };
-    email.to = [{ email: toEmail }];
-    email.subject = 'Kode OTP Login Portal B2B';
-    email.htmlContent = `
-        <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
-            <h2 style="color:#1e3a5f;margin-bottom:8px;">PT Trimas Mitra Perkasa</h2>
-            <p style="color:#374151;">Gunakan kode berikut untuk masuk ke portal B2B Anda:</p>
-            <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#f97316;text-align:center;padding:24px 0;">
-                ${otpCode}
+    return brevoClient.transactionalEmails.sendTransacEmail({
+        sender: { name: 'PT Trimas Mitra Perkasa', email: process.env.MAIL_USER },
+        to: [{ email: toEmail }],
+        subject: 'Kode OTP Login Portal B2B',
+        htmlContent: `
+            <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;border:1px solid #e5e7eb;border-radius:8px;">
+                <h2 style="color:#1e3a5f;margin-bottom:8px;">PT Trimas Mitra Perkasa</h2>
+                <p style="color:#374151;">Gunakan kode berikut untuk masuk ke portal B2B Anda:</p>
+                <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#f97316;text-align:center;padding:24px 0;">
+                    ${otpCode}
+                </div>
+                <p style="color:#6b7280;font-size:13px;">Kode ini berlaku selama <strong>15 menit</strong>. Jangan bagikan kode ini kepada siapapun.</p>
             </div>
-            <p style="color:#6b7280;font-size:13px;">Kode ini berlaku selama <strong>15 menit</strong>. Jangan bagikan kode ini kepada siapapun.</p>
-        </div>
-    `;
-    return brevoClient.sendTransacEmail(email);
+        `
+    });
 }
 
 const pool = mysql.createPool({
