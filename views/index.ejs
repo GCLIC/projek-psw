@@ -302,61 +302,27 @@
             </div>
         </div>
         <div class="row g-4" id="productGrid">
-            <div class="col-sm-6 col-lg-4 product-item">
-                <div class="product-card">
-                    <div class="product-img-box"><img src="pressure reducing valve.jpeg" alt="Pressure Reducing Valve" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
-                    <div class="p-4">
-                        <span style="font-size:0.72rem;font-weight:600;color:var(--steel);background:#dbeafe;border-radius:4px;padding:2px 8px;">VALVE</span>
-                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Pressure Reducing Valve</h5>
-                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Katup penurun tekanan yang menjaga stabilitas tekanan hilir dan melindungi sistem perpipaan.</p>
-                        <a href="pressure reducing valve.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+            <% if (products && products.length > 0) { %>
+                <% products.slice(0, 5).forEach(product => { %>
+                    <div class="col-sm-6 col-lg-4 product-item">
+                        <div class="product-card">
+                            <div class="product-img-box">
+                                <% if (product.Img_Url) { %>
+                                    <img src="/images/<%= encodeURIComponent(product.Img_Url) %>" alt="<%= product.Product_Name %>" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'">
+                                <% } else { %>
+                                    <i class="fa-solid fa-box" style="font-size:3rem;color:#cbd5e1;"></i>
+                                <% } %>
+                            </div>
+                            <div class="p-4">
+                                <span style="font-size:0.72rem;font-weight:600;color:var(--steel);background:#dbeafe;border-radius:4px;padding:2px 8px;">PRODUK</span>
+                                <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;"><%= product.Product_Name %></h5>
+                                <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;"><%= product.Short_Desc || 'Komponen industri berkualitas tinggi untuk kebutuhan perpipaan dan instrumentasi.' %></p>
+                                <a href="/portal" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 product-item">
-                <div class="product-card">
-                    <div class="product-img-box"><img src="pressure gauge.jpeg" alt="Pressure Gauge" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
-                    <div class="p-4">
-                        <span style="font-size:0.72rem;font-weight:600;color:#7c3aed;background:#ede9fe;border-radius:4px;padding:2px 8px;">INSTRUMEN</span>
-                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Pressure Gauge</h5>
-                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Pengukur tekanan presisi tinggi untuk pemantauan akurat di lingkungan industri yang menuntut.</p>
-                        <a href="pressure Gauge.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 product-item">
-                <div class="product-card">
-                    <div class="product-img-box"><img src="elbow.jpeg" alt="Elbow" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
-                    <div class="p-4">
-                        <span style="font-size:0.72rem;font-weight:600;color:#16a34a;background:#dcfce7;border-radius:4px;padding:2px 8px;">FITTING</span>
-                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Elbow</h5>
-                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Fitting elbow premium untuk perubahan arah aliran yang mulus pada sistem perpipaan bertekanan tinggi.</p>
-                        <a href="elbow.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 product-item">
-                <div class="product-card">
-                    <div class="product-img-box"><img src="barrel nipple.jpeg" alt="Barrel Nipple" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
-                    <div class="p-4">
-                        <span style="font-size:0.72rem;font-weight:600;color:#16a34a;background:#dcfce7;border-radius:4px;padding:2px 8px;">FITTING</span>
-                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Barrel Nipple</h5>
-                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Sambungan pipa heavy-duty untuk ekstensi lini fluida yang aman dan tahan terhadap tekanan tinggi.</p>
-                        <a href="barrel nipple.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 product-item">
-                <div class="product-card">
-                    <div class="product-img-box"><img src="ball valve.jpeg" alt="Ball Valve" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
-                    <div class="p-4">
-                        <span style="font-size:0.72rem;font-weight:600;color:var(--steel);background:#dbeafe;border-radius:4px;padding:2px 8px;">VALVE</span>
-                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Ball Valve</h5>
-                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Ball valve stainless steel berkualitas tinggi untuk kontrol aliran industri yang andal dan minim perawatan.</p>
-                        <a href="ball valve.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
+                <% }) %>
+            <% } %>
             <div class="col-sm-6 col-lg-4 d-flex align-items-center justify-content-center">
                 <div class="text-center p-3">
                     <div style="width:56px;height:56px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.9rem;font-size:1.3rem;color:var(--steel);"><i class="fa-solid fa-plus"></i></div>
