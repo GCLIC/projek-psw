@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi OTP — PT. Trimas Mitra Perkasa</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary:#0f2d52; --accent:#f47320; --steel:#2a7ab8; --border:#e2e8f0; --muted:#64748b; }
+        * { box-sizing:border-box; }
+        body { font-family:'Inter','Segoe UI',sans-serif; background:var(--primary); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+        .verify-card { background:#fff; border-radius:18px; padding:3rem 2.5rem; max-width:440px; width:100%; box-shadow:0 24px 60px rgba(0,0,0,0.35); text-align:center; }
+        .icon-ring { width:72px; height:72px; background:#dbeafe; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:1.75rem; color:var(--steel); }
+        .otp-input { letter-spacing:0.6rem; font-size:1.6rem; font-weight:700; text-align:center; border-radius:12px; padding:1rem; background:#f8fafc; border:2px solid var(--border); transition:border-color 0.2s,box-shadow 0.2s; width:100%; }
+        .otp-input:focus { outline:none; border-color:var(--steel); background:#fff; box-shadow:0 0 0 4px rgba(42,122,184,0.1); }
+        .btn-verify { background:var(--accent); color:#fff; border:none; border-radius:10px; font-weight:700; padding:0.85rem 1.5rem; font-size:0.95rem; width:100%; cursor:pointer; transition:all 0.2s; }
+        .btn-verify:hover { background:#d4621a; transform:translateY(-1px); }
+        .timer-ring { display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:#f1f5f9; font-size:0.875rem; font-weight:700; color:var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="verify-card">
+        <div class="icon-ring">
+            <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+
+        <h3 style="font-weight:800;color:var(--primary);margin-bottom:0.5rem;font-size:1.5rem;">Cek Email Anda</h3>
+        <p style="font-size:0.875rem;color:var(--muted);line-height:1.7;margin-bottom:2rem;">
+            Kami telah mengirimkan kode OTP 6-digit ke email perusahaan Anda.<br>Masukkan kode tersebut di bawah ini untuk melanjutkan.
+        </p>
+
+        <form action="/verify-otp" method="POST">
+            <input type="hidden" name="email" value="<%= email %>">
+            <div class="mb-4">
+                <input type="text" name="otp_code" class="otp-input" placeholder="• • • • • •" maxlength="6" autocomplete="one-time-code" inputmode="numeric" required>
+            </div>
+            <button type="submit" class="btn-verify">
+                Verifikasi Kode <i class="fa-solid fa-shield-check ms-2"></i>
+            </button>
+        </form>
+
+        <div style="margin-top:1.75rem;padding-top:1.75rem;border-top:1px solid var(--border);">
+            <p style="font-size:0.855rem;color:var(--muted);margin-bottom:0.6rem;">Tidak menerima email?</p>
+            <a href="/portal" style="font-size:0.875rem;font-weight:600;color:var(--steel);text-decoration:none;">
+                <i class="fa-solid fa-rotate-right me-1"></i> Kirim Ulang Kode
+            </a>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

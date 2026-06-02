@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Produk #<%= product.Product_ID %> — Admin PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+    <style>
+        .save-bar { margin: 0 -2.25rem -2rem; }
+        @media (max-width: 767px) { .save-bar { margin: 0 -1rem -1.25rem; } }
+    </style>
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon"><i class="fa-solid fa-server"></i></div>
+            <div>
+                <div class="sidebar-brand">Admin Panel</div>
+                <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+            </div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <span class="nav-label">Utama</span>
+        <a href="/admin/dashboard" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <span class="nav-label">Manajemen</span>
+        <a href="/admin/requests" class="nav-link"><i class="fa-solid fa-file-invoice-dollar"></i> Permintaan Penawaran</a>
+        <a href="/admin/products" class="nav-link active"><i class="fa-solid fa-boxes-stacked"></i> Katalog Produk</a>
+        <a href="/admin/customers" class="nav-link"><i class="fa-solid fa-users"></i> Daftar Pelanggan</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user-card">
+            <div class="admin-avatar"><i class="fa-solid fa-user-tie"></i></div>
+            <div>
+                <div class="admin-user-name"><%= adminName %></div>
+                <div class="admin-user-role">Administrator</div>
+            </div>
+        </div>
+        <a href="/admin-logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout System</a>
+    </div>
+</aside>
+
+<div class="admin-main">
+    <div class="admin-topbar">
+        <div class="topbar-left">
+            <div class="topbar-breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a><span class="sep">/</span>
+                <a href="/admin/products">Katalog</a><span class="sep">/</span>
+            </div>
+            <span class="topbar-page">Edit #<%= product.Product_ID %></span>
+        </div>
+        <div class="topbar-right">
+            <a href="/admin/products" class="btn-ghost" style="font-size:0.82rem;padding:0.42rem 0.85rem;">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <div class="page-header">
+            <div>
+                <div class="page-overline">EDIT PRODUK · SKU-<%= String(product.Product_ID).padStart(3,'0') %></div>
+                <h1 class="page-title"><%= product.Product_Name %></h1>
+                <p class="page-sub">Perbarui data komponen dalam database katalog.</p>
+            </div>
+        </div>
+
+        <form action="/admin/products/edit/<%= product.Product_ID %>" method="POST" id="productForm" enctype="multipart/form-data">
+
+            <!-- Basic Info -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-box" style="color:var(--steel);"></i> Informasi Dasar Produk
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label-custom">Nama Produk *</label>
+                        <input type="text" name="product_name" class="form-control" value="<%= product.Product_Name %>" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label-custom">Harga Satuan <span style="font-weight:400;color:var(--muted);text-transform:none;">(Opsional)</span></label>
+                        <div style="display:flex;">
+                            <div class="price-prefix" style="border-radius:var(--radius-sm) 0 0 var(--radius-sm);">Rp</div>
+                            <input type="number" name="unit_price" class="form-control" value="<%= product.Unit_Price %>" min="0" style="border-left:0;border-radius:0 var(--radius-sm) var(--radius-sm) 0;">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label-custom">Deskripsi Singkat</label>
+                        <input type="text" name="short_desc" class="form-control" value="<%= product.Short_Desc %>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label-custom">Stok</label>
+                        <input type="number" name="stock" class="form-control" value="<%= product.Stock %>" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label-custom">Gambar Produk</label>
+                        <!-- Hidden field keeps current filename if no new file is uploaded -->
+                        <input type="hidden" name="existing_img" value="<%= product.Img_Url || '' %>">
+                        <div id="upload-zone" onclick="document.getElementById('imgFileInput').click()"
+                             style="border:2px dashed var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface-2);min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;">
+                            <% if (product.Img_Url) { %>
+                                <img id="imgPreview" src="/images/<%= encodeURIComponent(product.Img_Url) %>" alt="<%= product.Product_Name %>"
+                                     onerror="this.style.display='none'"
+                                     style="max-height:80px;max-width:100%;object-fit:contain;border-radius:6px;margin-bottom:0.35rem;">
+                            <% } else { %>
+                                <img id="imgPreview" src="" alt="" style="display:none;max-height:80px;max-width:100%;object-fit:contain;border-radius:6px;margin-bottom:0.35rem;">
+                            <% } %>
+                            <i class="fa-solid fa-cloud-arrow-up" id="uploadIcon" style="font-size:1.2rem;color:var(--muted);<%= product.Img_Url ? 'display:none;' : '' %>"></i>
+                            <div id="uploadLabel" style="font-size:0.78rem;color:var(--muted);font-weight:500;">
+                                <%= product.Img_Url ? product.Img_Url : 'Klik untuk pilih gambar baru' %>
+                            </div>
+                            <div style="font-size:0.68rem;color:var(--muted);">JPG, PNG, WEBP · Maks 5 MB</div>
+                        </div>
+                        <input type="file" id="imgFileInput" name="product_image" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                        <div class="form-hint mt-1">Biarkan kosong untuk mempertahankan gambar saat ini.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features & Applications -->
+            <div class="row g-3 mb-0">
+                <div class="col-md-6">
+                    <div class="form-section" style="height:100%;margin-bottom:0;">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-list-check" style="color:#16a34a;"></i> Fitur Produk
+                        </div>
+                        <div id="feature-container">
+                            <% if (features.length === 0) { %>
+                                <div class="d-flex gap-2 mb-2">
+                                    <input type="text" name="features" class="form-control" placeholder="Fitur produk...">
+                                    <button type="button" class="btn-remove"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            <% } else { %>
+                                <% features.forEach(f => { %>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <input type="text" name="features" class="form-control" value="<%= f.Feature_Desc %>">
+                                        <button type="button" class="btn-remove"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                <% }) %>
+                            <% } %>
+                        </div>
+                        <button type="button" class="btn-add-row mt-2" id="btn-add-feature">
+                            <i class="fa-solid fa-plus"></i> Tambah Fitur
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-section" style="height:100%;margin-bottom:0;">
+                        <div class="form-section-title">
+                            <i class="fa-solid fa-industry" style="color:#d97706;"></i> Aplikasi Industri
+                        </div>
+                        <div id="application-container">
+                            <% if (applications.length === 0) { %>
+                                <div class="d-flex gap-2 mb-2">
+                                    <input type="text" name="applications" class="form-control" placeholder="Aplikasi industri...">
+                                    <button type="button" class="btn-remove"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            <% } else { %>
+                                <% applications.forEach(a => { %>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <input type="text" name="applications" class="form-control" value="<%= a.Application_Desc %>">
+                                        <button type="button" class="btn-remove"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                <% }) %>
+                            <% } %>
+                        </div>
+                        <button type="button" class="btn-add-row mt-2" id="btn-add-app">
+                            <i class="fa-solid fa-plus"></i> Tambah Aplikasi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specs -->
+            <div class="form-section mt-3">
+                <div class="form-section-title">
+                    <i class="fa-solid fa-wrench" style="color:#e11d48;"></i> Spesifikasi Teknis
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:0.5rem;margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);padding:0 0.3rem;">Parameter</div>
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);padding:0 0.3rem;">Nilai</div>
+                    <div></div>
+                </div>
+                <div id="spec-container">
+                    <% if (specs.length === 0) { %>
+                        <div class="row g-2 mb-2 spec-row">
+                            <div class="col-md-4"><input type="text" name="spec_names" class="form-control" style="background:var(--surface-2);font-weight:600;" placeholder="Parameter"></div>
+                            <div class="col-md-7"><input type="text" name="spec_values" class="form-control" placeholder="Nilai"></div>
+                            <div class="col-md-1 d-flex align-items-center"><button type="button" class="btn-remove w-100"><i class="fa-solid fa-trash"></i></button></div>
+                        </div>
+                    <% } else { %>
+                        <% specs.forEach(s => { %>
+                            <div class="row g-2 mb-2 spec-row">
+                                <div class="col-md-4"><input type="text" name="spec_names" class="form-control" style="background:var(--surface-2);font-weight:600;" value="<%= s.Spec_Name %>"></div>
+                                <div class="col-md-7"><input type="text" name="spec_values" class="form-control" value="<%= s.Spec_Value %>"></div>
+                                <div class="col-md-1 d-flex align-items-center"><button type="button" class="btn-remove w-100"><i class="fa-solid fa-trash"></i></button></div>
+                            </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+                <button type="button" class="btn-add-row mt-1" id="btn-add-spec">
+                    <i class="fa-solid fa-plus"></i> Tambah Baris Spesifikasi
+                </button>
+            </div>
+
+            <!-- Save Bar -->
+            <div class="save-bar">
+                <div style="font-size:0.82rem;color:var(--muted);">
+                    <i class="fa-solid fa-triangle-exclamation me-1" style="color:var(--accent);"></i>
+                    Menyimpan akan menggantikan seluruh data specs, fitur, dan aplikasi yang ada.
+                </div>
+                <div style="display:flex;gap:0.75rem;align-items:center;">
+                    <a href="/admin/products" class="btn-ghost">Batal</a>
+                    <button type="submit" class="btn-accent" style="font-size:0.95rem;padding:0.7rem 2rem;">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Image upload preview
+    document.getElementById('imgFileInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('imgPreview');
+            const icon = document.getElementById('uploadIcon');
+            const label = document.getElementById('uploadLabel');
+            const zone = document.getElementById('upload-zone');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            icon.style.display = 'none';
+            label.textContent = file.name;
+            zone.style.borderColor = 'var(--steel)';
+            zone.style.background = 'var(--steel-bg)';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    const zone = document.getElementById('upload-zone');
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor='var(--steel)'; });
+    zone.addEventListener('dragleave', () => { zone.style.borderColor='var(--border)'; });
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && /\.(jpe?g|png|webp)$/i.test(file.name)) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('imgFileInput').files = dt.files;
+            document.getElementById('imgFileInput').dispatchEvent(new Event('change'));
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('btn-add-feature').addEventListener('click', function() {
+            const c = document.getElementById('feature-container');
+            const d = document.createElement('div');
+            d.className = 'd-flex gap-2 mb-2';
+            d.innerHTML = '<input type="text" name="features" class="form-control" placeholder="Fitur tambahan..."><button type="button" class="btn-remove"><i class="fa-solid fa-trash"></i></button>';
+            c.appendChild(d);
+            d.querySelector('input').focus();
+        });
+
+        document.getElementById('btn-add-app').addEventListener('click', function() {
+            const c = document.getElementById('application-container');
+            const d = document.createElement('div');
+            d.className = 'd-flex gap-2 mb-2';
+            d.innerHTML = '<input type="text" name="applications" class="form-control" placeholder="Aplikasi tambahan..."><button type="button" class="btn-remove"><i class="fa-solid fa-trash"></i></button>';
+            c.appendChild(d);
+            d.querySelector('input').focus();
+        });
+
+        document.getElementById('btn-add-spec').addEventListener('click', function() {
+            const c = document.getElementById('spec-container');
+            const d = document.createElement('div');
+            d.className = 'row g-2 mb-2 spec-row';
+            d.innerHTML = '<div class="col-md-4"><input type="text" name="spec_names" class="form-control" style="background:var(--surface-2);font-weight:600;" placeholder="Parameter"></div><div class="col-md-7"><input type="text" name="spec_values" class="form-control" placeholder="Nilai"></div><div class="col-md-1 d-flex align-items-center"><button type="button" class="btn-remove w-100"><i class="fa-solid fa-trash"></i></button></div>';
+            c.appendChild(d);
+            d.querySelector('input').focus();
+        });
+
+        document.body.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-remove');
+            if (!btn) return;
+            const parent = btn.parentElement;
+            if (parent.classList.contains('col-md-1')) {
+                parent.parentElement.remove();
+            } else {
+                parent.remove();
+            }
+        });
+    });
+</script>
+</body>
+</html>

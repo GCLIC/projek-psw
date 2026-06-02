@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PT. Trimas Mitra Perkasa — Distributor Valve & Fitting Tepercaya</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f2d52;
+            --primary-mid: #163d6e;
+            --accent: #f47320;
+            --accent-dark: #d4621a;
+            --steel: #2a7ab8;
+            --bg: #f0f4f8;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; color: var(--text); background: var(--surface); margin: 0; }
+
+        /* Navbar */
+        .navbar { background: #fff !important; border-bottom: 1px solid var(--border); padding: 0.7rem 0; }
+        .nav-brand-name { font-size: 1.05rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+        .nav-brand-sub { font-size: 0.72rem; color: var(--muted); font-weight: 400; }
+        .nav-link { color: var(--muted) !important; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 0.9rem; transition: color 0.2s; }
+        .nav-link:hover { color: var(--primary) !important; }
+        .btn-portal { background: var(--accent); color: #fff !important; border-radius: 8px; padding: 0.5rem 1.25rem; font-weight: 600; font-size: 0.875rem; transition: all 0.2s; border: none; }
+        .btn-portal:hover { background: var(--accent-dark) !important; transform: translateY(-1px); }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(140deg, #071929 0%, var(--primary) 50%, var(--primary-mid) 100%);
+            padding: 5rem 0 4rem; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(ellipse at 15% 50%, rgba(42,122,184,0.18) 0%, transparent 55%),
+                              radial-gradient(ellipse at 85% 15%, rgba(244,115,32,0.07) 0%, transparent 45%);
+        }
+        .hero-grid {
+            position: absolute; inset: 0; opacity: 0.03;
+            background-image: linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px);
+            background-size: 44px 44px;
+        }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: rgba(244,115,32,0.12); color: #f9a05a;
+            border: 1px solid rgba(244,115,32,0.25); border-radius: 20px;
+            font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.9rem; margin-bottom: 1.5rem;
+        }
+        .hero-title { font-size: clamp(1.9rem, 4vw, 3.1rem); font-weight: 800; color: #fff; line-height: 1.15; margin-bottom: 1.25rem; }
+        .hero-title .accent { color: #f9a05a; }
+        .hero-desc { color: rgba(255,255,255,0.65); font-size: 1rem; line-height: 1.8; max-width: 540px; margin-bottom: 2rem; }
+        .btn-hero-primary { background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 600; padding: 0.8rem 1.75rem; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn-hero-primary:hover { background: var(--accent-dark); color: #fff; transform: translateY(-2px); }
+        .btn-hero-outline { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-weight: 600; padding: 0.8rem 1.75rem; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .btn-hero-outline:hover { background: rgba(255,255,255,0.15); }
+        .hero-stats { display: flex; align-items: center; gap: 2rem; margin-top: 3rem; flex-wrap: wrap; }
+        .hero-stat { }
+        .hero-stat-val { font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1; }
+        .hero-stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 3px; font-weight: 500; }
+        .hero-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.12); }
+
+        /* Cert bar */
+        .cert-bar { background: #091e33; padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .cert-pill { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; font-size: 0.775rem; font-weight: 500; padding: 0.28rem 0.85rem; white-space: nowrap; }
+
+        /* Sections */
+        .section-eyebrow { font-size: 0.75rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; }
+        .section-h { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; color: var(--primary); line-height: 1.2; }
+        .section-line { width: 44px; height: 3px; background: var(--accent); border-radius: 2px; margin: 0.65rem 0 1rem; }
+
+        /* About cards */
+        .about-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; background: #fff; transition: all 0.3s; }
+        .about-card:hover { border-color: var(--steel); box-shadow: 0 8px 28px rgba(15,45,82,0.09); transform: translateY(-4px); }
+        .about-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; margin-bottom: 0.9rem; }
+
+        /* Why us */
+        .why-section { background: var(--primary); }
+        .why-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); border-radius: var(--radius); padding: 1.6rem; transition: all 0.3s; height: 100%; }
+        .why-card:hover { background: rgba(255,255,255,0.09); border-color: rgba(244,115,32,0.35); }
+        .why-icon { width: 38px; height: 38px; background: rgba(244,115,32,0.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #f9a05a; font-size: 0.95rem; margin-bottom: 0.9rem; }
+
+        /* Products */
+        .product-card { border: 1px solid var(--border); border-radius: var(--radius); background: #fff; transition: all 0.25s; overflow: hidden; height: 100%; }
+        .product-card:hover { box-shadow: 0 12px 32px rgba(15,45,82,0.1); transform: translateY(-3px); border-color: var(--steel); }
+        .product-img-box { height: 155px; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .product-img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+        .btn-detail { display: block; width: 100%; background: transparent; border: 1.5px solid var(--accent); color: var(--accent); border-radius: 8px; font-weight: 600; font-size: 0.85rem; padding: 0.5rem 1rem; text-align: center; text-decoration: none; transition: all 0.2s; }
+        .btn-detail:hover { background: var(--accent); color: #fff; }
+
+        /* CTA */
+        .cta-box { background: linear-gradient(135deg, #071929 0%, var(--primary) 100%); border-radius: 16px; }
+        .pdf-icon-circle { background: #fee2e2; color: #dc2626; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .btn-dl { display: block; width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 700; padding: 0.85rem 1rem; font-size: 0.95rem; text-align: center; text-decoration: none; transition: all 0.2s; }
+        .btn-dl:hover { background: var(--accent-dark); color: #fff; transform: translateY(-1px); }
+
+        /* Footer */
+        footer { background: #060e1a; color: #64748b; padding: 4rem 0 1.75rem; }
+        .footer-link { color: #64748b; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
+        .footer-link:hover { color: #f9a05a; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/" style="text-decoration:none;">
+            <img src="images/Logo PT trimas mitra perkasa.jpeg" alt="TMP Logo" style="height:38px;width:auto;border-radius:6px;">
+            <div>
+                <div class="nav-brand-name">PT. Trimas Mitra Perkasa</div>
+                <div class="nav-brand-sub">Distributor Peralatan Industri · Batam</div>
+            </div>
+        </a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end gap-1" id="navMain">
+            <ul class="navbar-nav align-items-lg-center mt-3 mt-lg-0">
+                <li class="nav-item"><a class="nav-link" href="#home">Beranda</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">Tentang Kami</a></li>
+                <li class="nav-item"><a class="nav-link" href="#products">Produk</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Kontak</a></li>
+                <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                    <a class="btn btn-portal" href="/portal">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Portal Mitra
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header id="home" class="hero">
+    <div class="hero-grid"></div>
+    <div class="container position-relative">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="hero-tag">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Berbasis di Batam, Indonesia
+                </div>
+                <h1 class="hero-title">
+                    Solusi Valve &amp; Fitting<br>
+                    <span class="accent">Industri Terpercaya</span> di Batam
+                </h1>
+                <p class="hero-desc">
+                    Menyediakan komponen industri berkualitas tinggi — valve, fitting, dan instrumen pipa — untuk kebutuhan sektor maritim, manufaktur, minyak &amp; gas, serta industri berat lainnya.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#products" class="btn-hero-primary">
+                        Lihat Produk Kami <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <button type="button" class="btn-hero-outline" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                        <i class="fa-solid fa-file-invoice"></i> Minta Penawaran
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">10+</div>
+                        <div class="hero-stat-label">Tahun Pengalaman</div>
+                    </div>
+                    <div class="hero-divider"></div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">500+</div>
+                        <div class="hero-stat-label">Klien Industri</div>
+                    </div>
+                    <div class="hero-divider"></div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">1000+</div>
+                        <div class="hero-stat-label">SKU Produk</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- CERT BAR -->
+<div class="cert-bar">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <span style="font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.45);white-space:nowrap;">
+                <i class="fa-solid fa-shield-halved me-2" style="color:var(--accent);"></i>TERSERTIFIKASI
+            </span>
+            <span class="cert-pill">ISO 9001</span>
+            <span class="cert-pill">ASME B16.5</span>
+            <span class="cert-pill">API 600</span>
+            <span class="cert-pill">SNI</span>
+        </div>
+    </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about" class="py-5" style="background:var(--bg);">
+    <div class="container py-4">
+        <div class="row mb-5">
+            <div class="col-lg-6">
+                <div class="section-eyebrow">Tentang Kami</div>
+                <h2 class="section-h">Mitra Industri yang Dapat Anda Andalkan</h2>
+                <div class="section-line"></div>
+                <p style="color:var(--muted);line-height:1.8;font-size:0.95rem;margin:0;">
+                    PT Trimas Mitra Perkasa adalah distributor terkemuka di Batam yang berfokus pada penyediaan Valve, Fitting, dan instrumen pipa berkualitas tinggi. Kami melayani sektor maritim, manufaktur, migas, serta industri berat dengan standar internasional.
+                </p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="about-card">
+                    <div class="about-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h6 style="font-weight:700;color:var(--primary);margin-bottom:0.4rem;font-size:0.975rem;">Resmi &amp; Bersertifikat</h6>
+                    <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin:0;">Terdaftar resmi sebagai PT (Perseroan Terbatas) dengan nomor registrasi 937987.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="about-card">
+                    <div class="about-icon" style="background:#ffedd5;color:var(--accent);"><i class="fa-solid fa-truck-fast"></i></div>
+                    <h6 style="font-weight:700;color:var(--primary);margin-bottom:0.4rem;font-size:0.975rem;">Distribusi Cepat</h6>
+                    <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin:0;">Jaringan distribusi efisien dari Batam ke seluruh kota besar di Indonesia.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="about-card">
+                    <div class="about-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-award"></i></div>
+                    <h6 style="font-weight:700;color:var(--primary);margin-bottom:0.4rem;font-size:0.975rem;">Jaminan Kualitas</h6>
+                    <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin:0;">Produk premium memenuhi kualifikasi dan spesifikasi standar industri internasional.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="about-card">
+                    <div class="about-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fa-solid fa-users-gear"></i></div>
+                    <h6 style="font-weight:700;color:var(--primary);margin-bottom:0.4rem;font-size:0.975rem;">Dukungan Ahli</h6>
+                    <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin:0;">Tim profesional siap memberikan konsultasi teknis dan layanan pelanggan andal.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY US -->
+<section class="why-section py-5">
+    <div class="container py-4 text-center">
+        <div class="section-eyebrow" style="color:rgba(249,160,90,0.75);">Keunggulan Kami</div>
+        <h2 class="section-h mb-2" style="color:#fff;">Mengapa Memilih PT Trimas Mitra Perkasa?</h2>
+        <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;max-width:480px;margin:0 auto 3rem;">Mitra andal Anda untuk solusi valve dan fitting industri di seluruh Indonesia.</p>
+        <div class="row g-4" style="max-width:860px;margin:0 auto;">
+            <div class="col-md-6">
+                <div class="why-card text-start">
+                    <div class="why-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div style="font-weight:700;color:#fff;font-size:0.975rem;margin-bottom:0.4rem;">Stok Ready di Batam</div>
+                    <div style="color:rgba(255,255,255,0.55);font-size:0.855rem;line-height:1.65;">Produk tersedia langsung di gudang Batam, siap kirim ke seluruh Indonesia dengan waktu tunggu minimal.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="why-card text-start">
+                    <div class="why-icon"><i class="fa-solid fa-medal"></i></div>
+                    <div style="font-weight:700;color:#fff;font-size:0.975rem;margin-bottom:0.4rem;">Material Berkualitas Tinggi</div>
+                    <div style="color:rgba(255,255,255,0.55);font-size:0.855rem;line-height:1.65;">Tersedia dalam Stainless Steel SS316L, Carbon Steel, dan Duplex untuk berbagai aplikasi industri.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="why-card text-start">
+                    <div class="why-icon"><i class="fa-solid fa-tag"></i></div>
+                    <div style="font-weight:700;color:#fff;font-size:0.975rem;margin-bottom:0.4rem;">Harga Kompetitif</div>
+                    <div style="color:rgba(255,255,255,0.55);font-size:0.855rem;line-height:1.65;">Penawaran langsung dari distributor — transparan, tanpa perantara, dengan diskon volume untuk order besar.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="why-card text-start">
+                    <div class="why-icon"><i class="fa-solid fa-headset"></i></div>
+                    <div style="font-weight:700;color:#fff;font-size:0.975rem;margin-bottom:0.4rem;">Dukungan Teknis 24/7</div>
+                    <div style="color:rgba(255,255,255,0.55);font-size:0.855rem;line-height:1.65;">Konsultan teknis berpengalaman siap membantu pemilihan spesifikasi material dan layanan purnajual.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" class="py-5" style="background:var(--bg);">
+    <div class="container py-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+            <div>
+                <div class="section-eyebrow">Katalog Produk</div>
+                <h2 class="section-h">Produk Unggulan Kami</h2>
+            </div>
+            <div class="input-group" style="max-width:280px;">
+                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted" style="font-size:0.85rem;"></i></span>
+                <input type="text" id="productSearch" class="form-control border-start-0 ps-0" placeholder="Cari produk..." style="font-size:0.875rem;border-radius:0 8px 8px 0;">
+            </div>
+        </div>
+        <div class="row g-4" id="productGrid">
+            <div class="col-sm-6 col-lg-4 product-item">
+                <div class="product-card">
+                    <div class="product-img-box"><img src="pressure reducing valve.jpeg" alt="Pressure Reducing Valve" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
+                    <div class="p-4">
+                        <span style="font-size:0.72rem;font-weight:600;color:var(--steel);background:#dbeafe;border-radius:4px;padding:2px 8px;">VALVE</span>
+                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Pressure Reducing Valve</h5>
+                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Katup penurun tekanan yang menjaga stabilitas tekanan hilir dan melindungi sistem perpipaan.</p>
+                        <a href="pressure reducing valve.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 product-item">
+                <div class="product-card">
+                    <div class="product-img-box"><img src="pressure gauge.jpeg" alt="Pressure Gauge" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
+                    <div class="p-4">
+                        <span style="font-size:0.72rem;font-weight:600;color:#7c3aed;background:#ede9fe;border-radius:4px;padding:2px 8px;">INSTRUMEN</span>
+                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Pressure Gauge</h5>
+                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Pengukur tekanan presisi tinggi untuk pemantauan akurat di lingkungan industri yang menuntut.</p>
+                        <a href="pressure Gauge.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 product-item">
+                <div class="product-card">
+                    <div class="product-img-box"><img src="elbow.jpeg" alt="Elbow" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
+                    <div class="p-4">
+                        <span style="font-size:0.72rem;font-weight:600;color:#16a34a;background:#dcfce7;border-radius:4px;padding:2px 8px;">FITTING</span>
+                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Elbow</h5>
+                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Fitting elbow premium untuk perubahan arah aliran yang mulus pada sistem perpipaan bertekanan tinggi.</p>
+                        <a href="elbow.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 product-item">
+                <div class="product-card">
+                    <div class="product-img-box"><img src="barrel nipple.jpeg" alt="Barrel Nipple" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
+                    <div class="p-4">
+                        <span style="font-size:0.72rem;font-weight:600;color:#16a34a;background:#dcfce7;border-radius:4px;padding:2px 8px;">FITTING</span>
+                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Barrel Nipple</h5>
+                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Sambungan pipa heavy-duty untuk ekstensi lini fluida yang aman dan tahan terhadap tekanan tinggi.</p>
+                        <a href="barrel nipple.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 product-item">
+                <div class="product-card">
+                    <div class="product-img-box"><img src="ball valve.jpeg" alt="Ball Valve" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-box\' style=\'font-size:3rem;color:#cbd5e1;\'></i>'"></div>
+                    <div class="p-4">
+                        <span style="font-size:0.72rem;font-weight:600;color:var(--steel);background:#dbeafe;border-radius:4px;padding:2px 8px;">VALVE</span>
+                        <h5 style="font-weight:700;color:var(--primary);margin:0.6rem 0 0.4rem;font-size:1.05rem;">Ball Valve</h5>
+                        <p style="font-size:0.85rem;color:var(--muted);line-height:1.65;margin-bottom:1.2rem;">Ball valve stainless steel berkualitas tinggi untuk kontrol aliran industri yang andal dan minim perawatan.</p>
+                        <a href="ball valve.html" class="btn-detail">Lihat Detail <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 d-flex align-items-center justify-content-center">
+                <div class="text-center p-3">
+                    <div style="width:56px;height:56px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.9rem;font-size:1.3rem;color:var(--steel);"><i class="fa-solid fa-plus"></i></div>
+                    <p style="font-size:0.875rem;color:var(--muted);margin-bottom:1rem;">Lebih banyak produk tersedia di katalog lengkap kami.</p>
+                    <a href="/portal" class="btn-hero-primary" style="font-size:0.85rem;">Akses E-Katalog Lengkap</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA CATALOG -->
+<section class="py-5">
+    <div class="container">
+        <div class="cta-box p-4 p-md-5 text-white">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span style="background:rgba(244,115,32,0.12);color:#f9a05a;border:1px solid rgba(244,115,32,0.25);border-radius:20px;font-size:0.775rem;font-weight:600;padding:0.3rem 0.9rem;display:inline-block;margin-bottom:1rem;">Panduan Produk Virtual</span>
+                    <h2 style="font-size:1.9rem;font-weight:800;margin-bottom:0.75rem;line-height:1.2;">Unduh E-Katalog Produk Lengkap</h2>
+                    <p style="color:rgba(255,255,255,0.6);line-height:1.75;max-width:500px;font-size:0.93rem;">Dapatkan akses instan ke seluruh daftar produk, spesifikasi teknis, dimensi, material, dan informasi harga — dalam satu dokumen PDF siap unduh.</p>
+                </div>
+                <div class="col-lg-5">
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.75rem;">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="pdf-icon-circle"><i class="fa-solid fa-file-pdf"></i></div>
+                            <div>
+                                <div style="font-weight:700;color:#fff;font-size:0.975rem;">E-Katalog Produk</div>
+                                <div style="font-size:0.775rem;color:rgba(255,255,255,0.45);">Format PDF · Selalu Diperbarui</div>
+                            </div>
+                        </div>
+                        <a href="assets/e-catalog-trimas.pdf" download class="btn-dl">
+                            <i class="fa-solid fa-download me-2"></i>Unduh Katalog Sekarang
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+    <div class="container">
+        <div class="row g-4 mb-4 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div class="col-lg-4">
+                <div style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:0.75rem;">PT. Trimas Mitra Perkasa</div>
+                <p style="font-size:0.855rem;line-height:1.75;max-width:340px;">Distributor terpercaya komponen mekanikal, katup industri, dan sambungan pipa berkualitas tinggi di Kota Batam.</p>
+            </div>
+            <div class="col-lg-3 offset-lg-1">
+                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:1.2rem;">Navigasi</div>
+                <ul class="list-unstyled" style="margin:0;">
+                    <li class="mb-2"><a href="#home" class="footer-link">Beranda</a></li>
+                    <li class="mb-2"><a href="#about" class="footer-link">Tentang Kami</a></li>
+                    <li class="mb-2"><a href="#products" class="footer-link">Produk</a></li>
+                    <li class="mb-2"><a href="/portal" class="footer-link">Portal Mitra B2B</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:1.2rem;">Hubungi Kami</div>
+                <div style="font-size:0.855rem;display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;">
+                    <i class="fa-solid fa-location-dot" style="color:var(--accent);margin-top:3px;"></i>
+                    <span>Komplek Ruko Kintamani Blok D No. 1, Sungai Panas, Batam</span>
+                </div>
+                <div style="font-size:0.855rem;display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:center;">
+                    <i class="fa-solid fa-phone" style="color:var(--accent);"></i>
+                    <span>+62 812 8882 1882</span>
+                </div>
+                <div style="font-size:0.855rem;display:flex;gap:0.6rem;align-items:center;">
+                    <i class="fa-solid fa-envelope" style="color:var(--accent);"></i>
+                    <span>sales@trimasmitraperkasa.com</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div style="font-size:0.8rem;">&copy; 2026 PT. Trimas Mitra Perkasa. Hak Cipta Dilindungi.</div>
+            <div class="d-flex gap-3">
+                <a href="#" class="footer-link" style="font-size:0.8rem;">Kebijakan Privasi</a>
+                <a href="#" class="footer-link" style="font-size:0.8rem;">Syarat &amp; Ketentuan</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- MODAL PENAWARAN -->
+<div class="modal fade" id="quoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+            <div class="modal-header text-white px-4 py-3 border-0" style="background:var(--primary);">
+                <div>
+                    <h5 class="modal-title fw-bold mb-0" style="font-family:'Inter',sans-serif;">Minta Penawaran Harga</h5>
+                    <small style="color:rgba(255,255,255,0.55);">Isi formulir dan tim kami akan segera menghubungi Anda.</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4" style="background:var(--bg);">
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Nama Lengkap *</label>
+                            <input type="text" class="form-control bg-white" placeholder="Nama Anda" style="border-radius:8px;font-size:0.9rem;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Nama Perusahaan *</label>
+                            <input type="text" class="form-control bg-white" placeholder="PT. Nama Perusahaan" style="border-radius:8px;font-size:0.9rem;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Alamat Email *</label>
+                            <input type="email" class="form-control bg-white" placeholder="email@perusahaan.com" style="border-radius:8px;font-size:0.9rem;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Nomor Telepon *</label>
+                            <input type="tel" class="form-control bg-white" placeholder="+62 8xx xxxx xxxx" style="border-radius:8px;font-size:0.9rem;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Jenis Produk *</label>
+                            <select class="form-select bg-white" style="border-radius:8px;font-size:0.9rem;" required>
+                                <option value="" disabled selected>Pilih Produk</option>
+                                <option>Seri Ball Valve</option>
+                                <option>Buttweld Fittings</option>
+                                <option>Pressure Gauge</option>
+                                <option>Pressure Reducing Valve</option>
+                                <option>Komponen Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Estimasi Jumlah</label>
+                            <input type="text" class="form-control bg-white" placeholder="Contoh: 50 Unit" style="border-radius:8px;font-size:0.9rem;">
+                        </div>
+                        <div class="col-12">
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Kebutuhan Tambahan</label>
+                            <textarea class="form-control bg-white" rows="3" placeholder="Persyaratan teknis, jadwal pengiriman, atau detail lainnya..." style="border-radius:8px;font-size:0.9rem;"></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn-dl" style="border-radius:10px;display:flex;align-items:center;justify-content:center;gap:0.5rem;cursor:pointer;">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Penawaran
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('productSearch').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('.product-item').forEach(item => {
+            const h = item.querySelector('h5');
+            item.style.display = (!h || h.textContent.toLowerCase().includes(q)) ? '' : 'none';
+        });
+    });
+</script>
+</body>
+</html>

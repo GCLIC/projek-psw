@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.Product_Name %> — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        .back-link {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            font-size: 0.82rem; font-weight: 600; color: var(--muted);
+            text-decoration: none; transition: color 0.2s; margin-bottom: 1.5rem;
+        }
+        .back-link:hover { color: var(--primary); }
+        html[data-theme="dark"] .back-link:hover { color: var(--accent-soft); }
+
+        .detail-wrap {
+            display: grid; grid-template-columns: 1fr 1.4fr; gap: 2rem; align-items: start;
+        }
+        @media (max-width: 900px) { .detail-wrap { grid-template-columns: 1fr; } }
+
+        .img-panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; overflow: hidden; position: sticky; top: 2rem;
+        }
+        html[data-theme="dark"] .img-panel { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        @media (max-width: 900px) { .img-panel { position: static; } }
+
+        .img-main {
+            height: 300px; display: flex; align-items: center; justify-content: center;
+            padding: 2rem; background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+        }
+        html[data-theme="dark"] .img-main { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+        .img-main img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
+        .img-footer { padding: 1.25rem 1.5rem; }
+        .img-footer .product-price {
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 0.8px;
+            text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem;
+        }
+        .img-footer .price-note {
+            font-size: 0.82rem; color: var(--muted); margin-bottom: 1.25rem;
+        }
+
+        .info-panel {}
+        .product-tag {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            background: var(--accent-glow); color: var(--accent);
+            border: 1px solid rgba(244,115,32,0.2); border-radius: 6px;
+            font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.7rem;
+            letter-spacing: 0.4px; margin-bottom: 0.75rem;
+        }
+        .product-main-name {
+            font-size: 1.85rem; font-weight: 800; color: var(--primary);
+            line-height: 1.15; margin-bottom: 0.6rem;
+        }
+        html[data-theme="dark"] .product-main-name { color: #fff; }
+        .product-id-row {
+            display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+        }
+        .sku-chip {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 6px; padding: 0.28rem 0.7rem;
+            font-size: 0.72rem; font-weight: 700; color: var(--muted);
+            letter-spacing: 0.4px;
+        }
+        html[data-theme="dark"] .sku-chip { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+        .stock-badge {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            font-size: 0.75rem; font-weight: 700; padding: 0.28rem 0.75rem;
+            border-radius: 20px;
+        }
+        .stock-badge.in  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .stock-badge.low { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+        .stock-badge.out { background: #fff1f2; color: #dc2626; border: 1px solid #fecdd3; }
+        html[data-theme="dark"] .stock-badge.in  { background: rgba(22,163,74,0.15);  border-color: rgba(22,163,74,0.3); }
+        html[data-theme="dark"] .stock-badge.low { background: rgba(217,119,6,0.15);  border-color: rgba(217,119,6,0.3); }
+        html[data-theme="dark"] .stock-badge.out { background: rgba(220,38,38,0.15);  border-color: rgba(220,38,38,0.3); }
+
+        .product-desc-text {
+            font-size: 0.9rem; color: var(--text-light); line-height: 1.75;
+            margin-bottom: 1.75rem; padding-bottom: 1.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Info sections */
+        .info-section { margin-bottom: 1.75rem; }
+        .info-section-head {
+            display: flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .info-section-head .label { font-size: 0.68rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); }
+        .info-section-head .line { flex: 1; height: 1px; background: var(--border); }
+
+        /* Specs table */
+        .specs-table { width: 100%; border-collapse: collapse; }
+        .specs-table tr { border-bottom: 1px solid var(--border); }
+        .specs-table tr:last-child { border-bottom: none; }
+        .specs-table td { padding: 0.7rem 0.5rem; font-size: 0.875rem; vertical-align: top; }
+        .specs-table td:first-child {
+            font-weight: 700; color: var(--muted); width: 45%;
+            font-size: 0.82rem; padding-right: 1rem;
+        }
+        .specs-table td:last-child { color: var(--text); font-weight: 600; }
+        html[data-theme="dark"] .specs-table td:last-child { color: #e2e8f0; }
+
+        /* Feature / Application pills */
+        .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .tag-pill {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.4rem 0.85rem;
+            font-size: 0.82rem; font-weight: 600; color: var(--text-light);
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        html[data-theme="dark"] .tag-pill { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #cbd5e1; }
+        .tag-pill i { color: var(--accent); font-size: 0.75rem; }
+
+        .app-pill {
+            background: rgba(42,122,184,0.08); border: 1px solid rgba(42,122,184,0.2);
+            border-radius: 8px; padding: 0.4rem 0.85rem;
+            font-size: 0.82rem; font-weight: 600; color: var(--steel);
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        html[data-theme="dark"] .app-pill { background: rgba(42,122,184,0.12); border-color: rgba(42,122,184,0.25); color: #93c5fd; }
+        .app-pill i { font-size: 0.75rem; }
+
+        .empty-info { font-size: 0.875rem; color: var(--muted); font-style: italic; }
+
+        /* Mobile compact action bar */
+        .mobile-action-bar {
+            display: none;
+            position: fixed; bottom: 64px; left: 0; right: 0;
+            padding: 0.75rem 1rem; background: var(--surface);
+            border-top: 1px solid var(--border); z-index: 250;
+            gap: 0.5rem;
+        }
+        html[data-theme="dark"] .mobile-action-bar { background: #0d1e33; border-color: rgba(255,255,255,0.07); }
+        @media (max-width: 767px) { .mobile-action-bar { display: flex; } }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= user.Company_Name %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link active"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link"><i class="fa-solid fa-cart-shopping"></i> Draft Request</a>
+    <a href="/dashboard/history" class="sidebar-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-box-open"></i></div>
+        <div class="mobile-topbar-name">Detail Produk</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        <a href="/dashboard/products" class="topbar-btn" style="text-decoration:none;"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+</div>
+
+<main class="main-content">
+    <a href="/dashboard/products" class="back-link hide-mobile">
+        <i class="fa-solid fa-arrow-left"></i> Kembali ke E-Katalog
+    </a>
+
+    <div class="detail-wrap">
+
+        <!-- Image Panel -->
+        <div class="img-panel">
+            <div class="img-main">
+                <img src="/images/<%= encodeURIComponent(product.Img_Url) %>"
+                     onerror="this.style.display='none';this.parentElement.innerHTML+='<i class=\'fa-solid fa-box\' style=\'font-size:5rem;color:#cbd5e1;\'></i>'"
+                     alt="<%= product.Product_Name %>">
+            </div>
+            <div class="img-footer">
+                <% if (product.Unit_Price && product.Unit_Price > 0) { %>
+                    <div class="product-price">HARGA ACUAN</div>
+                    <div style="font-size:1.35rem;font-weight:800;color:var(--primary);margin-bottom:0.25rem;">
+                        <%= new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR',maximumFractionDigits:0}).format(product.Unit_Price) %>
+                    </div>
+                    <div class="price-note">Harga acuan per unit. Harga final ditentukan setelah RFQ diproses.</div>
+                <% } else { %>
+                    <div class="product-price">HARGA KHUSUS B2B</div>
+                    <div class="price-note">Harga akan diberikan setelah pengajuan RFQ diproses oleh tim sales kami.</div>
+                <% } %>
+                <!-- Desktop add to cart -->
+                <form action="/add-to-cart" method="POST" class="hide-mobile">
+                    <input type="hidden" name="product_id" value="<%= product.Product_ID %>">
+                    <input type="hidden" name="product_name" value="<%= product.Product_Name %>">
+                    <button type="submit" class="btn-accent w-100" style="justify-content:center;padding:0.8rem;font-size:0.95rem;border-radius:10px;">
+                        <i class="fa-solid fa-plus"></i> Tambah ke Draft Request
+                    </button>
+                </form>
+                <a href="/dashboard/cart" class="btn-ghost w-100 mt-2 hide-mobile" style="justify-content:center;">
+                    <i class="fa-solid fa-cart-shopping"></i> Lihat Draft Request
+                    <% if (cart && cart.length > 0) { %>
+                        <span style="background:var(--accent);color:#fff;border-radius:10px;font-size:0.68rem;font-weight:800;padding:0.1rem 0.45rem;margin-left:0.25rem;"><%= cart.length %></span>
+                    <% } %>
+                </a>
+            </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <div class="product-tag"><i class="fa-solid fa-industry"></i> Komponen Industri</div>
+            <h1 class="product-main-name"><%= product.Product_Name %></h1>
+            <div class="product-id-row">
+                <span class="sku-chip">SKU-<%= String(product.Product_ID).padStart(3,'0') %></span>
+                <% const stock = product.Stock || 0; %>
+                <span class="stock-badge <%= stock > 10 ? 'in' : stock > 0 ? 'low' : 'out' %>">
+                    <i class="fa-solid fa-circle" style="font-size:0.45rem;"></i>
+                    <%= stock > 10 ? 'Stok Tersedia' : stock > 0 ? 'Stok Terbatas (' + stock + ' unit)' : 'Stok Habis' %>
+                </span>
+            </div>
+
+            <div class="product-desc-text">
+                <%= product.Short_Desc || 'Komponen mekanikal premium dirancang untuk kebutuhan industri maritim, migas, dan manufaktur. Memenuhi standar internasional dan tersedia dalam berbagai spesifikasi sesuai kebutuhan B2B Anda.' %>
+            </div>
+
+            <!-- Specifications -->
+            <div class="info-section">
+                <div class="info-section-head">
+                    <span class="label">Spesifikasi Teknis</span>
+                    <div class="line"></div>
+                </div>
+                <% if (specs && specs.length > 0) { %>
+                    <table class="specs-table">
+                        <% specs.forEach(spec => { %>
+                            <tr>
+                                <td><%= spec.Spec_Name %></td>
+                                <td><%= spec.Spec_Value %></td>
+                            </tr>
+                        <% }) %>
+                    </table>
+                <% } else { %>
+                    <p class="empty-info">Spesifikasi teknis belum tersedia untuk produk ini.</p>
+                <% } %>
+            </div>
+
+            <!-- Features -->
+            <div class="info-section">
+                <div class="info-section-head">
+                    <span class="label">Fitur Unggulan</span>
+                    <div class="line"></div>
+                </div>
+                <% if (features && features.length > 0) { %>
+                    <div class="tag-list">
+                        <% features.forEach(f => { %>
+                            <span class="tag-pill">
+                                <i class="fa-solid fa-check-circle"></i>
+                                <%= f.Feature || f.Feature_Name || f.feature %>
+                            </span>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p class="empty-info">Informasi fitur belum tersedia.</p>
+                <% } %>
+            </div>
+
+            <!-- Applications -->
+            <div class="info-section">
+                <div class="info-section-head">
+                    <span class="label">Aplikasi & Penggunaan</span>
+                    <div class="line"></div>
+                </div>
+                <% if (applications && applications.length > 0) { %>
+                    <div class="tag-list">
+                        <% applications.forEach(a => { %>
+                            <span class="app-pill">
+                                <i class="fa-solid fa-industry"></i>
+                                <%= a.Application || a.Application_Name || a.application %>
+                            </span>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p class="empty-info">Informasi aplikasi belum tersedia.</p>
+                <% } %>
+            </div>
+
+            <!-- Info box -->
+            <div style="background:rgba(244,115,32,0.06);border:1px solid rgba(244,115,32,0.15);border-radius:10px;padding:1rem 1.25rem;margin-top:0.5rem;display:flex;align-items:flex-start;gap:0.75rem;">
+                <i class="fa-solid fa-circle-info" style="color:var(--accent);font-size:1rem;margin-top:0.1rem;flex-shrink:0;"></i>
+                <div>
+                    <div style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.25rem;">Cara Pemesanan B2B</div>
+                    <div style="font-size:0.8rem;color:var(--muted);line-height:1.65;">Tambahkan produk ke <strong style="color:var(--text);">Draft Request</strong>, lalu ajukan RFQ. Tim sales kami akan menghubungi Anda dalam 1×24 jam dengan penawaran harga khusus.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Mobile Action Bar (above bottom nav) -->
+<div class="mobile-action-bar">
+    <form action="/add-to-cart" method="POST" style="flex:1;display:flex;">
+        <input type="hidden" name="product_id" value="<%= product.Product_ID %>">
+        <input type="hidden" name="product_name" value="<%= product.Product_Name %>">
+        <button type="submit" class="btn-accent w-100" style="justify-content:center;border-radius:8px;">
+            <i class="fa-solid fa-plus"></i> Tambah ke Draft
+        </button>
+    </form>
+    <a href="/dashboard/cart" class="btn-ghost" style="flex-shrink:0;padding:0.65rem 1rem;border-radius:8px;">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <% if (cart && cart.length > 0) { %><span style="background:var(--accent);color:#fff;border-radius:10px;font-size:0.65rem;font-weight:800;padding:0.1rem 0.4rem;"><%= cart.length %></span><% } %>
+    </a>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a>
+    <a href="/dashboard/products" class="bnav-item active"><i class="fa-solid fa-box-open"></i><span>Katalog</span></a>
+    <a href="/dashboard/cart" class="bnav-item">
+        <i class="fa-solid fa-cart-shopping"></i><span>Draft</span>
+        <% if (cart && cart.length > 0) { %><span class="bnav-badge"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="bnav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+</nav>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+            document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+</script>
+</body>
+</html>

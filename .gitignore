@@ -1,0 +1,7 @@
+node_modules/
+create-admin.js
+.env
+public/images/*.jpeg
+public/images/*.jpg
+public/images/*.png
+public/images/*.webp

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Transaksi — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        /* Mobile: card-based history list instead of table */
+        .history-card-list { display: none; }
+        .history-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 0.75rem;
+        }
+        html[data-theme="dark"] .history-card { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        .history-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.65rem; }
+        .history-card-id { font-weight: 800; color: var(--steel); font-size: 0.9rem; }
+        html[data-theme="dark"] .history-card-id { color: var(--steel-light); }
+        .history-card-meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+        .history-card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 0.65rem; flex-wrap: wrap; gap: 0.5rem; }
+        .history-card-value { font-weight: 700; color: var(--text); font-size: 0.875rem; }
+        .history-card-actions { display: flex; gap: 0.4rem; }
+
+        .btn-icon {
+            background: var(--surface-2); border: 1px solid var(--border);
+            color: var(--muted); border-radius: 7px;
+            width: 32px; height: 32px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; transition: all 0.2s; cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-icon:hover { background: var(--bg); color: var(--primary); border-color: var(--steel); }
+        html[data-theme="dark"] .btn-icon { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
+        html[data-theme="dark"] .btn-icon:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .btn-icon:disabled, .btn-icon[disabled] { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+        .table-actions-bar {
+            display: flex; gap: 0.5rem;
+        }
+
+        .btn-pay {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: linear-gradient(135deg, #0553a4, #0f2d52);
+            color: #fff; border: none; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 700; padding: 0.45rem 1rem;
+            text-decoration: none; transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(5,83,164,0.3);
+        }
+        .btn-pay:hover { background: linear-gradient(135deg, #043884, #0c2444); color: #fff; transform: translateY(-1px); }
+
+        @media (max-width: 767px) {
+            .history-table-wrap { display: none; }
+            .history-card-list { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= user.Company_Name %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link">
+        <i class="fa-solid fa-cart-shopping"></i> Draft Request
+        <% if (cart.length > 0) { %><span class="badge bg-danger rounded-pill ms-auto" style="font-size:0.68rem;"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="sidebar-link active"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="mobile-topbar-name">Riwayat Transaksi</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+</div>
+
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <div class="page-overline">REKAP TRANSAKSI</div>
+            <h1 class="page-title">Riwayat Transaksi</h1>
+            <p class="page-sub">Pantau status permintaan harga dan unduh invoice pesanan terdahulu.</p>
+        </div>
+        <div class="table-actions-bar">
+            <button class="btn-ghost" style="font-size:0.82rem;">
+                <i class="fa-solid fa-filter"></i><span class="hide-mobile"> Filter</span>
+            </button>
+            <button class="btn-ghost" style="font-size:0.82rem;">
+                <i class="fa-solid fa-download"></i><span class="hide-mobile"> Export PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Desktop Table -->
+    <div class="history-table-wrap data-table">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>No. Request</th>
+                    <th>Tanggal</th>
+                    <th>Jumlah Item</th>
+                    <th>Total Nilai</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (typeof history !== 'undefined' && history.length > 0) { %>
+                    <% history.forEach(req => { %>
+                        <tr>
+                            <td style="font-weight:800;color:var(--steel);">
+                                <%= req.id %>
+                            </td>
+                            <td style="color:var(--muted);"><%= req.date %></td>
+                            <td style="color:var(--muted);"><%= req.items %> Komponen</td>
+                            <td style="font-weight:700;color:var(--text);"><%= req.total_value %></td>
+                            <td>
+                                <span class="badge-pill badge-<%= req.color === 'success' ? 'done' : req.color === 'danger' ? 'danger' : 'pending' %>">
+                                    <i class="fa-solid fa-circle" style="font-size:0.4rem;"></i>
+                                    <%= req.status %>
+                                </span>
+                            </td>
+                            <td style="text-align:right;display:flex;gap:0.4rem;justify-content:flex-end;align-items:center;">
+                                <a href="/dashboard/history/<%= req.id.replace('REQ-','') %>" class="btn-icon" title="Lihat Detail">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <% if (req.status === 'Selesai') { %>
+                                    <a href="/dashboard/payment/<%= req.id.replace('REQ-','') %>" class="btn-pay">
+                                        <i class="fa-solid fa-credit-card"></i> Bayar Sekarang
+                                    </a>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:3.5rem;color:var(--muted);">
+                            <i class="fa-solid fa-folder-open" style="font-size:2.5rem;opacity:0.15;display:block;margin-bottom:0.75rem;"></i>
+                            <div style="font-weight:600;margin-bottom:0.3rem;">Belum ada riwayat transaksi</div>
+                            <div style="font-size:0.82rem;">Ajukan permintaan harga untuk memulai.</div>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card List -->
+    <div class="history-card-list">
+        <% if (typeof history !== 'undefined' && history.length > 0) { %>
+            <% history.forEach(req => { %>
+                <div class="history-card">
+                    <div class="history-card-top">
+                        <div>
+                            <div class="history-card-id"><%= req.id %></div>
+                            <div class="history-card-meta">
+                                <i class="fa-regular fa-calendar me-1"></i><%= req.date %> &nbsp;·&nbsp; <%= req.items %> Komponen
+                            </div>
+                        </div>
+                        <span class="badge-pill badge-<%= req.color === 'success' ? 'done' : req.color === 'danger' ? 'danger' : 'pending' %>">
+                            <i class="fa-solid fa-circle" style="font-size:0.38rem;"></i>
+                            <%= req.status %>
+                        </span>
+                    </div>
+                    <div class="history-card-bottom">
+                        <div class="history-card-value"><%= req.total_value %></div>
+                        <div class="history-card-actions">
+                            <a href="/dashboard/history/<%= req.id.replace('REQ-','') %>" class="btn-icon" title="Lihat Detail">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <% if (req.status === 'Selesai') { %>
+                                <a href="/dashboard/payment/<%= req.id.replace('REQ-','') %>" class="btn-pay" style="font-size:0.78rem;padding:0.4rem 0.85rem;">
+                                    <i class="fa-solid fa-credit-card"></i> Bayar
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div style="text-align:center;padding:3rem 1.5rem;color:var(--muted);">
+                <i class="fa-solid fa-folder-open" style="font-size:2.5rem;opacity:0.15;display:block;margin-bottom:0.75rem;"></i>
+                <div style="font-weight:600;margin-bottom:0.3rem;">Belum ada riwayat transaksi</div>
+                <a href="/dashboard/products" class="btn-accent mt-2" style="font-size:0.82rem;display:inline-flex;">
+                    <i class="fa-solid fa-plus"></i> Buat Request Pertama
+                </a>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a>
+    <a href="/dashboard/products" class="bnav-item"><i class="fa-solid fa-box-open"></i><span>Katalog</span></a>
+    <a href="/dashboard/cart" class="bnav-item">
+        <i class="fa-solid fa-cart-shopping"></i><span>Draft</span>
+        <% if (cart.length > 0) { %><span class="bnav-badge"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="bnav-item active"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+</nav>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+            document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+</script>
+</body>
+</html>

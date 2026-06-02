@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Order — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        .detail-wrap { max-width: 680px; margin: 0 auto; }
+
+        .order-header-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 16px; padding: 1.5rem; color: #fff; margin-bottom: 1.25rem;
+            display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+        }
+        .order-id { font-size: 1.3rem; font-weight: 800; }
+        .order-date { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 0.2rem; }
+
+        .info-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; overflow: hidden; margin-bottom: 1.25rem;
+        }
+        html[data-theme="dark"] .info-card { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        .info-card-header {
+            padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border);
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.8px;
+            text-transform: uppercase; color: var(--muted);
+        }
+
+        .item-row {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-img {
+            width: 52px; height: 52px; border-radius: 10px; object-fit: cover;
+            border: 1px solid var(--border); flex-shrink: 0; background: var(--surface-2);
+        }
+        .item-icon {
+            width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
+            background: var(--surface-2); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent); font-size: 1.1rem;
+        }
+        .item-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+        .item-qty { font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; }
+        .item-price {
+            margin-left: auto; text-align: right; flex-shrink: 0;
+        }
+        .item-price .unit { font-size: 0.75rem; color: var(--muted); }
+        .item-price .total {
+            font-weight: 800; font-size: 0.9rem;
+            color: <% if (order.Order_Status === 'Selesai') { %>var(--primary)<% } else { %>var(--muted)<% } %>;
+        }
+        .item-price .pending-label {
+            font-size: 0.75rem; font-weight: 700; color: #d97706;
+            background: #fffbeb; border: 1px solid #fcd34d;
+            border-radius: 6px; padding: 0.15rem 0.5rem;
+        }
+
+        .total-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.25rem;
+        }
+        .total-row .label { font-weight: 700; color: var(--text); }
+        .total-row .amount { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        html[data-theme="dark"] .total-row .amount { color: #93c5fd; }
+
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--muted); text-decoration: none; font-size: 0.875rem;
+            font-weight: 600; transition: color 0.2s;
+        }
+        .btn-back:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= user.Company_Name %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link">
+        <i class="fa-solid fa-cart-shopping"></i> Draft Request
+        <% if (cart.length > 0) { %><span class="badge bg-danger rounded-pill ms-auto" style="font-size:0.68rem;"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="sidebar-link active"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-file-invoice"></i></div>
+        <div class="mobile-topbar-name">Detail Order</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+</div>
+
+<main class="main-content">
+    <div class="detail-wrap">
+
+        <a href="/dashboard/history" class="btn-back mb-4" style="display:inline-flex;">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Riwayat
+        </a>
+
+        <!-- Order Header -->
+        <div class="order-header-card">
+            <div>
+                <div class="order-id">REQ-<%= order.Order_ID %></div>
+                <div class="order-date">
+                    <i class="fa-regular fa-calendar me-1"></i>
+                    <%= new Date(order.Order_Date).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' }) %>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+                <%
+                    let badgeClass = 'badge-pending';
+                    if (order.Order_Status === 'Selesai') badgeClass = 'badge-done';
+                    if (order.Order_Status === 'Dibatalkan') badgeClass = 'badge-danger';
+                %>
+                <span class="badge-pill <%= badgeClass %>">
+                    <i class="fa-solid fa-circle" style="font-size:0.38rem;"></i>
+                    <%= order.Order_Status %>
+                </span>
+                <% if (order.Order_Status === 'Selesai') { %>
+                    <a href="/dashboard/payment/<%= order.Order_ID %>" class="btn-accent" style="font-size:0.8rem;padding:0.45rem 1rem;">
+                        <i class="fa-solid fa-credit-card"></i> Bayar Sekarang
+                    </a>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Item List -->
+        <div class="info-card">
+            <div class="info-card-header">Daftar Komponen (<%= details.length %> item)</div>
+            <% details.forEach(d => { %>
+                <div class="item-row">
+                    <% if (d.Img_Url) { %>
+                        <img src="/images/<%= encodeURIComponent(d.Img_Url) %>" class="item-img" alt="<%= d.Product_Name %>">
+                    <% } else { %>
+                        <div class="item-icon"><i class="fa-solid fa-gear"></i></div>
+                    <% } %>
+                    <div style="flex:1;min-width:0;">
+                        <div class="item-name"><%= d.Product_Name %></div>
+                        <div class="item-qty">Qty: <%= d.Quantity %> unit</div>
+                    </div>
+                    <div class="item-price">
+                        <% if (order.Order_Status === 'Selesai' && d.Selling_Price > 0) { %>
+                            <div class="unit">
+                                <%= new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR'}).format(d.Selling_Price) %> / unit
+                            </div>
+                            <div class="total">
+                                <%= new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR'}).format(d.Quantity * d.Selling_Price) %>
+                            </div>
+                        <% } else { %>
+                            <span class="pending-label"><i class="fa-solid fa-hourglass-half me-1"></i>Menunggu</span>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+
+            <% if (order.Order_Status === 'Selesai') { %>
+                <div class="total-row" style="border-top: 2px solid var(--border);">
+                    <span class="label">Total Tagihan</span>
+                    <span class="amount"><%= totalFormatted %></span>
+                </div>
+            <% } %>
+        </div>
+
+        <% if (order.Order_Status === 'Pending Review') { %>
+            <div style="text-align:center;padding:1rem;color:var(--muted);font-size:0.82rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
+                <i class="fa-solid fa-hourglass-half me-2" style="color:#d97706;"></i>
+                Tim sales kami sedang memproses permintaan harga Anda. Estimasi respons <strong>1×24 jam</strong>.
+            </div>
+        <% } %>
+
+    </div>
+</main>
+
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a>
+    <a href="/dashboard/products" class="bnav-item"><i class="fa-solid fa-box-open"></i><span>Katalog</span></a>
+    <a href="/dashboard/cart" class="bnav-item">
+        <i class="fa-solid fa-cart-shopping"></i><span>Draft</span>
+        <% if (cart.length > 0) { %><span class="bnav-badge"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="bnav-item active"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+</nav>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+            document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+</script>
+</body>
+</html>

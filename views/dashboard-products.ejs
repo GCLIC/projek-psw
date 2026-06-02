@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Katalog Produk — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        .search-bar {
+            display: flex; align-items: center;
+            background: var(--surface); border: 1.5px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            max-width: 320px; width: 100%;
+        }
+        html[data-theme="dark"] .search-bar { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+        .search-bar:focus-within { border-color: var(--steel); box-shadow: 0 0 0 3px rgba(42,122,184,0.1); }
+        .search-bar .search-icon { padding: 0 0.9rem; color: var(--muted); font-size: 0.85rem; }
+        .search-bar input {
+            flex: 1; border: none; outline: none; background: transparent;
+            padding: 0.7rem 0.5rem 0.7rem 0; font-size: 0.875rem;
+            font-family: 'Inter', sans-serif; color: var(--text); min-width: 0;
+        }
+        .search-bar input::placeholder { color: var(--muted); }
+
+        /* Product Cards */
+        .product-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; overflow: hidden;
+            transition: all 0.25s; height: 100%; display: flex; flex-direction: column;
+            position: relative;
+        }
+        html[data-theme="dark"] .product-card { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        .product-card:hover {
+            box-shadow: 0 16px 40px rgba(15,45,82,0.14);
+            transform: translateY(-4px); border-color: var(--steel);
+        }
+        html[data-theme="dark"] .product-card:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.4); border-color: var(--steel); }
+
+        .product-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--steel));
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .product-card:hover::before { opacity: 1; }
+
+        .product-img-box {
+            height: 180px; background: var(--surface-2);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.25rem; border-bottom: 1px solid var(--border); flex-shrink: 0;
+            position: relative; overflow: hidden;
+        }
+        html[data-theme="dark"] .product-img-box { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+        .product-img-box img { max-height: 100%; max-width: 100%; object-fit: contain; transition: transform 0.3s; }
+        .product-card:hover .product-img-box img { transform: scale(1.05); }
+
+        .product-body { padding: 1.25rem; display: flex; flex-direction: column; flex: 1; }
+        .product-sku {
+            font-size: 0.68rem; font-weight: 700; color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 0.45rem; display: block;
+        }
+        .product-name { font-weight: 800; color: var(--primary); font-size: 0.95rem; margin-bottom: 0.4rem; line-height: 1.3; }
+        html[data-theme="dark"] .product-name { color: #e2e8f0; }
+        .product-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.65; flex: 1; margin-bottom: 0.75rem; }
+
+        .product-price-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .price-label { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .price-value { font-size: 0.95rem; font-weight: 800; color: var(--primary); }
+        html[data-theme="dark"] .price-value { color: #93c5fd; }
+        .price-rfq { font-size: 0.75rem; font-weight: 600; color: var(--accent); background: rgba(244,115,32,0.08); border: 1px solid rgba(244,115,32,0.2); border-radius: 6px; padding: 0.15rem 0.5rem; }
+
+        .product-stock {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            font-size: 0.72rem; font-weight: 600; margin-bottom: 1rem;
+        }
+        .stock-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .stock-in  { color: #16a34a; } .stock-in  .stock-dot { background: #16a34a; }
+        .stock-low { color: #d97706; } .stock-low .stock-dot { background: #d97706; }
+        .stock-out { color: #dc2626; } .stock-out .stock-dot { background: #dc2626; }
+
+        .product-actions { display: flex; gap: 0.5rem; }
+        .btn-view-detail {
+            flex: 1; background: transparent; border: 1.5px solid var(--border);
+            border-radius: 8px; font-weight: 600; font-size: 0.82rem;
+            padding: 0.6rem 0.5rem; cursor: pointer; text-align: center;
+            color: var(--text); text-decoration: none; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+        }
+        .btn-view-detail:hover { border-color: var(--steel); color: var(--steel); background: rgba(42,122,184,0.06); }
+        html[data-theme="dark"] .btn-view-detail { border-color: rgba(255,255,255,0.15); color: #cbd5e1; }
+        html[data-theme="dark"] .btn-view-detail:hover { border-color: var(--steel-light); color: var(--steel-light); background: rgba(42,122,184,0.1); }
+
+        .btn-add-cart {
+            flex: 1; background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 0.82rem; padding: 0.6rem 0.5rem;
+            cursor: pointer; text-align: center; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 0.35rem;
+            box-shadow: 0 3px 10px rgba(244,115,32,0.25);
+        }
+        .btn-add-cart:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(244,115,32,0.4); }
+
+        .filter-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+        }
+
+        .results-count {
+            font-size: 0.8rem; color: var(--muted);
+        }
+        .results-count strong { color: var(--accent); }
+
+        .empty-state {
+            text-align: center; padding: 4rem 2rem;
+            background: var(--surface); border-radius: 14px; border: 1px solid var(--border);
+        }
+        html[data-theme="dark"] .empty-state { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        .empty-state i { font-size: 3rem; opacity: 0.2; display: block; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= user.Company_Name %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link active"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link"><i class="fa-solid fa-cart-shopping"></i> Draft Request</a>
+    <a href="/dashboard/history" class="sidebar-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-box-open"></i></div>
+        <div class="mobile-topbar-name">E-Katalog</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        <a href="/logout" class="topbar-btn" style="text-decoration:none;"><i class="fa-solid fa-right-from-bracket"></i></a>
+    </div>
+</div>
+
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <div class="page-overline">E-KATALOG B2B</div>
+            <h1 class="page-title">Produk Industri</h1>
+            <p class="page-sub">Pilih komponen untuk ditambahkan ke daftar permintaan penawaran Anda.</p>
+        </div>
+        <div class="search-bar">
+            <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="productSearch" placeholder="Cari nama produk...">
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <div class="results-count" id="resultsCount">
+            Menampilkan <strong id="countNum"><%= typeof products !== 'undefined' ? products.length : 0 %></strong> produk
+        </div>
+    </div>
+
+    <div class="row g-4" id="productGrid">
+        <% if (typeof products !== 'undefined' && products.length > 0) { %>
+            <% products.forEach(product => { %>
+                <div class="col-12 col-sm-6 col-xl-4 product-item">
+                    <div class="product-card">
+                        <div class="product-img-box">
+                            <img src="/images/<%= encodeURIComponent(product.Img_Url) %>"
+                                 onerror="this.style.display='none';this.parentElement.innerHTML+='<i class=\'fa-solid fa-box\' style=\'font-size:2.5rem;color:#cbd5e1;\'></i>'"
+                                 alt="<%= product.Product_Name %>">
+                        </div>
+                        <div class="product-body">
+                            <span class="product-sku">SKU-<%= String(product.Product_ID).padStart(3,'0') %></span>
+                            <div class="product-name"><%= product.Product_Name %></div>
+                            <div class="product-desc"><%= product.Short_Desc || 'Komponen mekanikal premium untuk kebutuhan industri maritim dan manufaktur.' %></div>
+                            <% const stock = product.Stock || 0; %>
+                            <div class="product-stock <%= stock > 10 ? 'stock-in' : stock > 0 ? 'stock-low' : 'stock-out' %>">
+                                <span class="stock-dot"></span>
+                                <%= stock > 10 ? 'Stok Tersedia' : stock > 0 ? 'Stok Terbatas (' + stock + ')' : 'Habis' %>
+                            </div>
+                            <div class="product-price-row">
+                                <% if (product.Unit_Price && product.Unit_Price > 0) { %>
+                                    <span class="price-label">Harga Acuan</span>
+                                    <span class="price-value"><%= new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR',maximumFractionDigits:0}).format(product.Unit_Price) %></span>
+                                <% } else { %>
+                                    <span class="price-rfq">Harga via RFQ</span>
+                                <% } %>
+                            </div>
+                            <div class="product-actions">
+                                <a href="/dashboard/products/<%= product.Product_ID %>" class="btn-view-detail">
+                                    <i class="fa-solid fa-eye"></i> Detail
+                                </a>
+                                <form action="/add-to-cart" method="POST" style="flex:1;display:flex;">
+                                    <input type="hidden" name="product_id" value="<%= product.Product_ID %>">
+                                    <input type="hidden" name="product_name" value="<%= product.Product_Name %>">
+                                    <button type="submit" class="btn-add-cart w-100">
+                                        <i class="fa-solid fa-plus"></i> Request
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fa-solid fa-box-open"></i>
+                    <h5 style="font-weight:800;color:var(--primary);margin-bottom:0.4rem;">Katalog Kosong</h5>
+                    <p style="color:var(--muted);margin:0;">Belum ada produk yang tersedia dalam database.</p>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a>
+    <a href="/dashboard/products" class="bnav-item active"><i class="fa-solid fa-box-open"></i><span>Katalog</span></a>
+    <a href="/dashboard/cart" class="bnav-item"><i class="fa-solid fa-cart-shopping"></i><span>Draft</span></a>
+    <a href="/dashboard/history" class="bnav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+</nav>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+            document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+
+    // Search + count
+    const searchInput = document.getElementById('productSearch');
+    const countEl = document.getElementById('countNum');
+    searchInput.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        const items = document.querySelectorAll('.product-item');
+        let visible = 0;
+        items.forEach(item => {
+            const name = item.querySelector('.product-name');
+            const show = !name || name.textContent.toLowerCase().includes(q);
+            item.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        countEl.textContent = visible;
+    });
+</script>
+</body>
+</html>

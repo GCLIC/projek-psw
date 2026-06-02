@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Mitra Bisnis — PT. Trimas Mitra Perkasa</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f2d52; --primary-deep: #071929; --primary-light: #163d6e;
+            --accent: #f47320; --accent-dark: #d4621a; --accent-soft: #f9a05a;
+            --steel: #2a7ab8; --border: #e2e8f0; --muted: #64748b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter','Segoe UI',sans-serif;
+            background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary) 50%, #1a4a7a 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+        }
+        /* Subtle dot grid overlay */
+        body::before {
+            content: ''; position: fixed; inset: 0; pointer-events: none;
+            background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .auth-wrap {
+            display: flex; max-width: 1060px; width: 100%;
+            border-radius: 20px; overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.06);
+        }
+
+        /* ── LEFT PANEL ── */
+        .auth-side {
+            background: linear-gradient(160deg, var(--primary-deep) 0%, var(--primary) 55%, var(--primary-light) 100%);
+            color: #fff; padding: 3.5rem 3rem; display: flex;
+            flex-direction: column; justify-content: space-between;
+            width: 420px; flex-shrink: 0; position: relative; overflow: hidden;
+        }
+        .auth-side::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at -20% 110%, rgba(42,122,184,0.3) 0%, transparent 55%),
+                        radial-gradient(ellipse at 110% 0%, rgba(244,115,32,0.12) 0%, transparent 45%);
+        }
+        .auth-side > * { position: relative; }
+
+        .auth-badge {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            background: rgba(244,115,32,0.12); color: var(--accent-soft);
+            border: 1px solid rgba(244,115,32,0.25); border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700; padding: 0.32rem 0.9rem;
+            margin-bottom: 1.5rem; width: fit-content;
+            letter-spacing: 0.3px;
+        }
+        .auth-side-title {
+            font-size: 2rem; font-weight: 800; line-height: 1.15; margin-bottom: 0.75rem;
+        }
+        .auth-side-title span { color: var(--accent-soft); }
+        .auth-side-desc {
+            color: rgba(255,255,255,0.55); font-size: 0.875rem; line-height: 1.75;
+            margin-bottom: 2.25rem;
+        }
+
+        .auth-features { list-style: none; padding: 0; margin: 0; }
+        .auth-features li {
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            font-size: 0.875rem; color: rgba(255,255,255,0.7);
+            margin-bottom: 1rem;
+        }
+        .auth-features li .feat-icon {
+            width: 28px; height: 28px; flex-shrink: 0;
+            background: rgba(244,115,32,0.15); border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-soft); font-size: 0.8rem;
+        }
+        .auth-features li .feat-text strong {
+            display: block; color: #fff; font-weight: 600;
+            font-size: 0.85rem; margin-bottom: 0.1rem;
+        }
+        .auth-features li .feat-text span {
+            font-size: 0.78rem; color: rgba(255,255,255,0.45);
+        }
+
+        .auth-cert-bar {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem;
+        }
+        .cert-chip {
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px; padding: 0.25rem 0.6rem;
+            font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.5);
+            letter-spacing: 0.4px;
+        }
+
+        /* ── RIGHT PANEL ── */
+        .auth-form-side {
+            background: #fff; padding: 3.5rem; flex: 1; display: flex;
+            flex-direction: column; justify-content: center;
+            min-width: 0;
+        }
+
+        .form-eyebrow {
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; color: var(--accent); margin-bottom: 0.35rem;
+        }
+        .form-heading {
+            font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;
+            font-size: 1.8rem; line-height: 1.15;
+        }
+        .form-subtext {
+            font-size: 0.9rem; color: var(--muted); margin-bottom: 2.25rem;
+            line-height: 1.65;
+        }
+
+        .form-label-custom {
+            font-size: 0.8rem; font-weight: 700; color: #1e293b;
+            display: block; margin-bottom: 0.45rem;
+        }
+        .input-group-custom {
+            display: flex; border: 1.5px solid var(--border);
+            border-radius: 10px; overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-group-custom:focus-within {
+            border-color: var(--steel); box-shadow: 0 0 0 3px rgba(42,122,184,0.1);
+        }
+        .input-icon {
+            padding: 0 1rem; background: #f8fafc;
+            display: flex; align-items: center;
+            color: var(--muted); font-size: 0.9rem;
+            border-right: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .input-field {
+            flex: 1; border: none; outline: none;
+            padding: 0.8rem 1rem; font-size: 0.9rem;
+            font-family: 'Inter', sans-serif; color: #1e293b;
+            background: transparent; min-width: 0;
+        }
+        .input-field::placeholder { color: #94a3b8; }
+
+        .input-hint {
+            display: flex; align-items: center; gap: 0.45rem;
+            font-size: 0.78rem; color: var(--muted); margin-top: 0.6rem;
+        }
+        .input-hint i { color: #16a34a; }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: #fff; border: none; border-radius: 10px;
+            font-weight: 700; padding: 0.9rem 1.5rem; font-size: 1rem;
+            width: 100%; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(244,115,32,0.3);
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,115,32,0.4); }
+
+        .trust-row {
+            display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+            margin-top: 1.25rem;
+            font-size: 0.78rem; color: var(--muted);
+        }
+        .trust-row i { color: #16a34a; }
+
+        .divider {
+            position: relative; text-align: center; margin: 2rem 0;
+        }
+        .divider::before {
+            content: ''; position: absolute; top: 50%; left: 0; right: 0;
+            height: 1px; background: var(--border);
+        }
+        .divider span {
+            position: relative; background: #fff;
+            padding: 0 0.85rem; font-size: 0.78rem; color: var(--muted); font-weight: 500;
+        }
+
+        .admin-link {
+            color: var(--muted); text-decoration: none;
+            font-size: 0.875rem; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            transition: color 0.2s;
+        }
+        .admin-link:hover { color: var(--primary); }
+
+        @media (max-width: 900px) {
+            .auth-side { width: 360px; padding: 2.5rem 2rem; }
+            .auth-form-side { padding: 2.5rem 2rem; }
+        }
+        @media (max-width: 767px) {
+            body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
+            .auth-wrap { max-width: 480px; margin: 0 auto; border-radius: 18px; }
+            .auth-side { display: none; }
+            .auth-form-side { border-radius: 18px; padding: 2.25rem 1.75rem; }
+            .form-heading { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-wrap">
+
+        <!-- ── LEFT PANEL ── -->
+        <div class="auth-side d-none d-md-flex flex-column">
+            <div>
+                <div class="auth-badge"><i class="fa-solid fa-building-shield"></i> Portal B2B Resmi</div>
+                <h2 class="auth-side-title">Portal <span>Mitra</span><br>Bisnis</h2>
+                <p class="auth-side-desc">Platform pengadaan B2B eksklusif untuk mitra terdaftar PT. Trimas Mitra Perkasa. Login tanpa kata sandi, aman dan instan.</p>
+
+                <ul class="auth-features">
+                    <li>
+                        <div class="feat-icon"><i class="fa-solid fa-box-open"></i></div>
+                        <div class="feat-text">
+                            <strong>E-Katalog Produk Lengkap</strong>
+                            <span>1.000+ SKU komponen industri & maritim</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="feat-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                        <div class="feat-text">
+                            <strong>Permintaan Penawaran Harga</strong>
+                            <span>Ajukan RFQ langsung dari portal</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="feat-text">
+                            <strong>Pantau Riwayat Transaksi</strong>
+                            <span>Lacak status pesanan secara real-time</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="feat-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                        <div class="feat-text">
+                            <strong>Konsultasi Teknis Langsung</strong>
+                            <span>Tim ahli siap via WhatsApp</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="auth-cert-bar">
+                    <span class="cert-chip">ISO 9001</span>
+                    <span class="cert-chip">ASME B16.5</span>
+                    <span class="cert-chip">API 600</span>
+                    <span class="cert-chip">SNI</span>
+                </div>
+            </div>
+
+            <a href="/" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:0.8rem;font-weight:500;display:flex;align-items:center;gap:0.4rem;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            </a>
+        </div>
+
+        <!-- ── RIGHT PANEL ── -->
+        <div class="auth-form-side">
+            <div class="d-md-none mb-4 text-center">
+                <div style="width:48px;height:48px;background:linear-gradient(135deg,#f47320,#d4621a);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;font-size:1.3rem;color:#fff;">
+                    <i class="fa-solid fa-pipe-section"></i>
+                </div>
+                <div style="font-size:1rem;font-weight:800;color:var(--primary);">PT. Trimas Mitra Perkasa</div>
+                <div style="font-size:0.78rem;color:var(--muted);">Portal Mitra Bisnis</div>
+            </div>
+
+            <div class="form-eyebrow">AUTENTIKASI</div>
+            <h3 class="form-heading">Masuk / Daftar</h3>
+            <p class="form-subtext">Masukkan email perusahaan Anda. Kami akan mengirimkan kode OTP 6-digit untuk login yang aman.</p>
+
+            <form action="/request-otp" method="POST">
+                <div class="mb-4">
+                    <label class="form-label-custom">Alamat Email Perusahaan</label>
+                    <div class="input-group-custom">
+                        <div class="input-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <input type="email" name="email" class="input-field"
+                               placeholder="procurement@perusahaan.com"
+                               required autocomplete="email">
+                    </div>
+                    <div class="input-hint">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Kode OTP berlaku selama <strong style="color:#1e293b;">15 menit</strong> dan hanya digunakan sekali.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Kirim Kode OTP
+                </button>
+            </form>
+
+            <div class="trust-row">
+                <i class="fa-solid fa-lock"></i>
+                Koneksi aman dengan enkripsi end-to-end
+            </div>
+
+            <div class="divider"><span>Akses Internal</span></div>
+
+            <div class="text-center">
+                <a href="/admin-login" class="admin-link">
+                    <i class="fa-solid fa-user-tie"></i> Akses Administrator
+                </a>
+            </div>
+
+            <div class="text-center mt-4 d-md-none">
+                <a href="/" style="color:var(--muted);text-decoration:none;font-size:0.8rem;display:inline-flex;align-items:center;gap:0.4rem;">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

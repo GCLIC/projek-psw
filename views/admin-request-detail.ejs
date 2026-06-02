@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REQ-<%= order.Order_ID %> — Admin PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+    <style>
+        /* Override save-bar margin for this page since we're in admin-content */
+        .save-bar { margin: 0 -2.25rem -2rem; }
+        @media (max-width: 767px) { .save-bar { margin: 0 -1rem -1.25rem; } }
+    </style>
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon"><i class="fa-solid fa-server"></i></div>
+            <div>
+                <div class="sidebar-brand">Admin Panel</div>
+                <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+            </div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <span class="nav-label">Utama</span>
+        <a href="/admin/dashboard" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <span class="nav-label">Manajemen</span>
+        <a href="/admin/requests" class="nav-link active"><i class="fa-solid fa-file-invoice-dollar"></i> Permintaan Penawaran</a>
+        <a href="/admin/products" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Katalog Produk</a>
+        <a href="/admin/customers" class="nav-link"><i class="fa-solid fa-users"></i> Daftar Pelanggan</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user-card">
+            <div class="admin-avatar"><i class="fa-solid fa-user-tie"></i></div>
+            <div>
+                <div class="admin-user-name"><%= adminName %></div>
+                <div class="admin-user-role">Administrator</div>
+            </div>
+        </div>
+        <a href="/admin-logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout System</a>
+    </div>
+</aside>
+
+<div class="admin-main">
+    <div class="admin-topbar">
+        <div class="topbar-left">
+            <div class="topbar-breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a><span class="sep">/</span>
+                <a href="/admin/requests">Permintaan</a><span class="sep">/</span>
+            </div>
+            <span class="topbar-page">REQ-<%= order.Order_ID %></span>
+        </div>
+        <div class="topbar-right">
+            <a href="/admin/requests" class="btn-ghost" style="font-size:0.82rem;padding:0.42rem 0.85rem;">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <div class="page-header">
+            <div>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                    <h1 class="page-title" style="margin:0;">Request #REQ-<%= order.Order_ID %></h1>
+                    <% if (order.Order_Status === 'Pending Review') { %>
+                        <span class="badge-pill badge-pending" style="font-size:0.78rem;padding:0.35rem 0.9rem;">
+                            <i class="fa-solid fa-circle" style="font-size:0.4rem;"></i> <%= order.Order_Status %>
+                        </span>
+                    <% } else if (order.Order_Status === 'Selesai') { %>
+                        <span class="badge-pill badge-done" style="font-size:0.78rem;padding:0.35rem 0.9rem;">
+                            <i class="fa-solid fa-circle-check"></i> <%= order.Order_Status %>
+                        </span>
+                    <% } else { %>
+                        <span class="badge-pill badge-danger" style="font-size:0.78rem;padding:0.35rem 0.9rem;"><%= order.Order_Status %></span>
+                    <% } %>
+                </div>
+                <p class="page-sub" style="margin-top:0.3rem;">
+                    Diajukan: <%= new Date(order.Order_Date).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Customer & Order Info -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="info-card-title"><i class="fa-solid fa-building"></i> Informasi Pelanggan</div>
+                    <div style="font-weight:800;color:var(--primary);font-size:1.05rem;margin-bottom:0.85rem;"><%= order.Company_Name %></div>
+                    <div class="info-row"><i class="fa-regular fa-user"></i> <span>PIC: <strong><%= order.F_name %></strong></span></div>
+                    <div class="info-row"><i class="fa-regular fa-envelope"></i>
+                        <a href="mailto:<%= order.Email %>"><%= order.Email %></a>
+                    </div>
+                    <div class="info-row"><i class="fa-solid fa-phone"></i>
+                        <% if (order.Phone_Number) { %>
+                            <a href="tel:<%= order.Phone_Number %>"><%= order.Phone_Number %></a>
+                        <% } else { %>
+                            <span style="color:var(--muted);font-style:italic;">Tidak ada nomor telepon</span>
+                        <% } %>
+                    </div>
+                    <% if (order.Phone_Number) { %>
+                        <div class="info-row" style="margin-top:0.5rem;">
+                            <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i>
+                            <a href="https://wa.me/<%= order.Phone_Number.replace(/[^0-9]/g,'') %>" target="_blank" style="color:#25d366;font-weight:600;">
+                                Chat via WhatsApp
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card">
+                    <div class="info-card-title"><i class="fa-solid fa-circle-info"></i> Detail Pengajuan</div>
+                    <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                        <span><strong>Tanggal:</strong> <%= new Date(order.Order_Date).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) %></span>
+                    </div>
+                    <div class="info-row"><i class="fa-solid fa-globe"></i>
+                        <span><strong>Sumber:</strong> <%= order.Order_Source %></span>
+                    </div>
+                    <div class="info-row"><i class="fa-solid fa-box"></i>
+                        <span><strong>Total Item:</strong> <%= details.length %> komponen</span>
+                    </div>
+                    <% if (order.Notes) { %>
+                        <div style="margin-top:0.85rem;background:#fffbeb;border-radius:8px;padding:0.85rem 1rem;font-size:0.855rem;line-height:1.65;border-left:3px solid var(--accent);">
+                            <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent);margin-bottom:0.35rem;">Catatan Pelanggan</div>
+                            <%= order.Notes %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Form -->
+        <form action="/admin/requests/<%= order.Order_ID %>/price" method="POST" id="pricingForm">
+            <div class="data-card mb-4">
+                <div class="data-card-header">
+                    <h6 class="data-card-title">
+                        <i class="fa-solid fa-tag" style="color:var(--muted);"></i>
+                        Penetapan Harga Satuan
+                    </h6>
+                    <% if (order.Order_Status === 'Pending Review') { %>
+                        <span style="font-size:0.78rem;color:var(--muted);">
+                            <i class="fa-solid fa-keyboard me-1"></i> Tekan Tab untuk pindah antar kolom
+                        </span>
+                    <% } %>
+                </div>
+                <div class="data-table table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:38%;">Produk</th>
+                                <th style="width:10%;text-align:center;">Qty</th>
+                                <th style="width:16%;text-align:right;">Harga Acuan</th>
+                                <th style="width:21%;">Harga Penawaran (Rp)</th>
+                                <th style="width:15%;text-align:right;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% let initialTotal = 0; %>
+                            <% details.forEach((item, index) => { %>
+                                <% initialTotal += (item.Quantity * item.Selling_Price); %>
+                                <tr>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                                            <% if (item.Img_Url) { %>
+                                                <img src="/images/<%= encodeURIComponent(item.Img_Url) %>"
+                                                     onerror="this.style.display='none'"
+                                                     style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;">
+                                            <% } else { %>
+                                                <div style="width:36px;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);font-size:0.85rem;">
+                                                    <i class="fa-solid fa-gear"></i>
+                                                </div>
+                                            <% } %>
+                                            <div>
+                                                <div style="font-weight:700;color:var(--primary);font-size:0.875rem;"><%= item.Product_Name %></div>
+                                                <div style="font-size:0.72rem;color:var(--muted);">SKU-<%= String(item.Product_ID).padStart(3,'0') %></div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="product_id" value="<%= item.Product_ID %>">
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span style="background:var(--bg);border:1px solid var(--border);border-radius:8px;font-weight:700;font-size:0.9rem;color:var(--primary);padding:0.25rem 0.75rem;display:inline-block;" class="qty-val"><%= item.Quantity %></span>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <% if (item.Unit_Price && item.Unit_Price > 0) { %>
+                                            <span style="font-weight:700;color:var(--text);font-size:0.85rem;">
+                                                Rp <%= Number(item.Unit_Price).toLocaleString('id-ID') %>
+                                            </span>
+                                        <% } else { %>
+                                            <span style="color:var(--muted);font-size:0.8rem;font-style:italic;">—</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <div class="price-input-wrap">
+                                            <div class="price-prefix">Rp</div>
+                                            <input type="text" name="selling_price"
+                                                class="price-field"
+                                                value="<%= item.Selling_Price == 0 ? '' : Number(item.Selling_Price).toLocaleString('id-ID') %>"
+                                                placeholder="0"
+                                                <%= order.Order_Status !== 'Pending Review' ? 'readonly' : 'required' %>
+                                                data-qty="<%= item.Quantity %>"
+                                                data-index="<%= index %>">
+                                        </div>
+                                    </td>
+                                    <td style="text-align:right;font-weight:700;color:var(--primary);font-size:0.875rem;font-variant-numeric:tabular-nums;">
+                                        <span class="subtotal-display" data-index="<%= index %>">
+                                            <%= item.Selling_Price > 0 ? 'Rp ' + (item.Quantity * item.Selling_Price).toLocaleString('id-ID') : '—' %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Save bar -->
+            <div class="save-bar">
+                <% if (order.Order_Status === 'Pending Review') { %>
+                    <button type="submit" class="btn-accent" style="font-size:0.95rem;padding:0.7rem 2rem;">
+                        <i class="fa-solid fa-check-double"></i> Simpan Harga &amp; Selesaikan
+                    </button>
+                <% } else { %>
+                    <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.875rem;font-weight:600;color:#16a34a;">
+                        <i class="fa-solid fa-circle-check fa-lg"></i> Penawaran telah selesai dan dikirimkan ke pelanggan.
+                    </div>
+                <% } %>
+                <div class="total-box" style="padding:0.85rem 1.5rem;">
+                    <div>
+                        <div class="total-label">Total Estimasi</div>
+                    </div>
+                    <div class="total-value" id="grandTotal">
+                        Rp <span id="grandTotalNum"><%= initialTotal.toLocaleString('id-ID') %></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const priceInputs = document.querySelectorAll('.price-field:not([readonly])');
+
+        function calculateTotal() {
+            let total = 0;
+            document.querySelectorAll('.price-field').forEach(function(input, index) {
+                const raw = input.value.replace(/[^0-9]/g, '');
+                const price = parseInt(raw) || 0;
+                const qty = parseInt(input.getAttribute('data-qty')) || 0;
+                const sub = price * qty;
+                total += sub;
+                const subtotalEl = document.querySelector('.subtotal-display[data-index="' + index + '"]');
+                if (subtotalEl) {
+                    subtotalEl.textContent = sub > 0 ? 'Rp ' + sub.toLocaleString('id-ID') : '—';
+                }
+                // Format input on blur, not on keyup to avoid cursor jump
+            });
+            document.getElementById('grandTotalNum').textContent = total.toLocaleString('id-ID');
+        }
+
+        priceInputs.forEach(function(input) {
+            input.addEventListener('input', function() {
+                const raw = this.value.replace(/[^0-9]/g, '');
+                // Keep raw while typing, format on blur
+                calculateTotal();
+            });
+            input.addEventListener('blur', function() {
+                const raw = this.value.replace(/[^0-9]/g, '');
+                if (raw) this.value = parseInt(raw).toLocaleString('id-ID');
+                calculateTotal();
+            });
+            input.addEventListener('focus', function() {
+                // Show raw number when focused for easier editing
+                const raw = this.value.replace(/[^0-9]/g, '');
+                this.value = raw;
+            });
+        });
+
+        calculateTotal();
+    });
+</script>
+</body>
+</html>

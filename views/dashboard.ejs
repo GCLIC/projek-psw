@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mitra — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 60%, #1d5290 100%);
+            border-radius: 16px; padding: 2rem 2.25rem;
+            color: #fff; position: relative; overflow: hidden;
+            margin-bottom: 1.75rem;
+        }
+        .welcome-banner::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 100% 0%, rgba(244,115,32,0.2) 0%, transparent 50%),
+                        radial-gradient(ellipse at -10% 100%, rgba(42,122,184,0.25) 0%, transparent 45%);
+        }
+        .welcome-banner > * { position: relative; }
+        .welcome-banner .eyebrow {
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; color: var(--accent-soft); margin-bottom: 0.35rem;
+        }
+        .welcome-banner h2 {
+            font-size: 1.45rem; font-weight: 800; margin-bottom: 0.35rem; line-height: 1.2;
+        }
+        .welcome-banner p {
+            font-size: 0.875rem; color: rgba(255,255,255,0.6); margin: 0;
+        }
+        .welcome-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+        .btn-banner-primary {
+            background: var(--accent); color: #fff; border: none;
+            border-radius: 8px; font-weight: 700; font-size: 0.875rem;
+            padding: 0.6rem 1.25rem; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            box-shadow: 0 4px 12px rgba(244,115,32,0.4); transition: all 0.2s;
+        }
+        .btn-banner-primary:hover { background: var(--accent-dark); color: #fff; transform: translateY(-1px); }
+        .btn-banner-ghost {
+            background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
+            font-weight: 600; font-size: 0.875rem; padding: 0.6rem 1.25rem;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        .btn-banner-ghost:hover { background: rgba(255,255,255,0.18); color: #fff; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
+        @media (max-width: 992px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+
+        .req-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden;
+        }
+        html[data-theme="dark"] .req-card { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        .req-card-header {
+            padding: 1rem 1.25rem; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid var(--border);
+        }
+        .req-card-body { padding: 0; }
+        .req-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+            gap: 1rem;
+        }
+        .req-row:last-child { border-bottom: none; }
+        .req-row-left { display: flex; align-items: center; gap: 0.75rem; }
+        .req-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .req-icon.pending { background: #fffbeb; color: #d97706; }
+        .req-icon.active  { background: #f0fdf4; color: #16a34a; }
+        html[data-theme="dark"] .req-icon.pending { background: rgba(217,119,6,0.15); }
+        html[data-theme="dark"] .req-icon.active  { background: rgba(22,163,74,0.15); }
+        .req-id { font-weight: 700; font-size: 0.875rem; color: var(--text); }
+        .req-date { font-size: 0.78rem; color: var(--muted); margin-top: 0.05rem; }
+
+        .wa-card {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            border-radius: 16px; padding: 1.75rem 2rem;
+            display: flex; align-items: center; gap: 1.5rem;
+            position: relative; overflow: hidden;
+        }
+        .wa-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 100% 50%, rgba(37,211,102,0.15) 0%, transparent 60%);
+        }
+        .wa-card > * { position: relative; }
+        .wa-icon { font-size: 2.5rem; color: #4ade80; flex-shrink: 0; }
+        .wa-text h5 { font-weight: 800; color: #fff; margin-bottom: 0.3rem; font-size: 1rem; }
+        .wa-text p { font-size: 0.82rem; color: rgba(255,255,255,0.65); margin: 0; line-height: 1.6; }
+        .btn-wa {
+            background: #25d366; color: #fff; border: none; border-radius: 10px;
+            font-weight: 700; padding: 0.7rem 1.5rem; font-size: 0.9rem;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(37,211,102,0.35);
+        }
+        .btn-wa:hover { background: #1ebe5a; color: #fff; transform: translateY(-1px); }
+        @media (max-width: 600px) {
+            .wa-card { flex-direction: column; text-align: center; gap: 1rem; }
+        }
+
+        .empty-box {
+            text-align: center; padding: 2.5rem 1.5rem;
+            color: var(--muted);
+        }
+        .empty-box i { font-size: 2rem; opacity: 0.2; display: block; margin-bottom: 0.65rem; }
+        .empty-box p { font-size: 0.875rem; margin: 0; }
+
+        /* Onboarding modal inputs */
+        .input-group-custom { display:flex; border:1.5px solid #cbd5e1; border-radius:10px; overflow:hidden; transition:border-color 0.2s,box-shadow 0.2s; }
+        .input-group-custom:focus-within { border-color:#2a7ab8; box-shadow:0 0 0 3px rgba(42,122,184,0.1); }
+        .input-icon { padding:0 1rem; background:#f8fafc; display:flex; align-items:center; color:#64748b; font-size:0.9rem; border-right:1.5px solid #cbd5e1; flex-shrink:0; }
+        .input-field { flex:1; border:none; outline:none; padding:0.8rem 1rem; font-size:0.9rem; font-family:'Inter',sans-serif; color:#1e293b; background:transparent; min-width:0; }
+        .input-field::placeholder { color:#94a3b8; }
+
+        /* Accordion overrides */
+        .accordion-item { border: 1px solid var(--border) !important; border-radius: 10px !important; margin-bottom: 0.5rem; overflow: hidden; }
+        html[data-theme="dark"] .accordion-item { border-color: rgba(255,255,255,0.09) !important; }
+        .accordion-button { font-weight: 600; font-size: 0.9rem; background: var(--surface); color: var(--text); box-shadow: none !important; }
+        html[data-theme="dark"] .accordion-button { background: rgba(15,45,82,0.45); color: #e2e8f0; }
+        .accordion-button:not(.collapsed) { background: #f0f7ff; color: var(--primary); }
+        html[data-theme="dark"] .accordion-button:not(.collapsed) { background: rgba(42,122,184,0.15); color: #93c5fd; }
+        .accordion-body { background: var(--surface); }
+        html[data-theme="dark"] .accordion-body { background: rgba(15,45,82,0.3); color: var(--text); }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= (user && user.Company_Name) ? user.Company_Name : 'Mitra Baru' %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link active"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link"><i class="fa-solid fa-cart-shopping"></i> Draft Request</a>
+    <a href="/dashboard/history" class="sidebar-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <div class="theme-toggle mb-3 hide-desktop" onclick="toggleTheme()">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+            <span id="themeLabel">Mode Gelap</span>
+        </div>
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div class="mobile-topbar-name">Portal Mitra</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()" title="Toggle Dark Mode">
+            <i class="fa-solid fa-circle-half-stroke" id="themeIconMobile"></i>
+        </button>
+        <a href="/logout" class="topbar-btn" style="text-decoration:none;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+    </div>
+</div>
+
+<!-- MAIN -->
+<main class="main-content">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="eyebrow">SELAMAT DATANG KEMBALI</div>
+        <h2><%= (user && user.Company_Name) ? user.Company_Name : 'Mitra' %></h2>
+        <p>Kelola permintaan penawaran dan pantau status pesanan aktif Anda dari sini.</p>
+        <div class="welcome-actions">
+            <a href="/dashboard/products" class="btn-banner-primary">
+                <i class="fa-solid fa-box-open"></i> Lihat E-Katalog
+            </a>
+            <a href="/dashboard/history" class="btn-banner-ghost">
+                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-card-overline">Pending RFQ</div>
+            <div class="stat-card-value"><%= typeof pendingRequests !== 'undefined' ? pendingRequests.length : 0 %></div>
+            <div class="stat-card-label">Menunggu penawaran harga</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-overline">Pesanan Aktif</div>
+            <div class="stat-card-value"><%= typeof activeOrders !== 'undefined' ? activeOrders.length : 0 %></div>
+            <div class="stat-card-label">Sedang diproses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-overline">Draft Request</div>
+            <div class="stat-card-value" style="color:var(--accent);">
+                <a href="/dashboard/cart" style="color:inherit;text-decoration:none;">
+                    <i class="fa-solid fa-cart-shopping" style="font-size:1.3rem;"></i>
+                </a>
+            </div>
+            <div class="stat-card-label"><a href="/dashboard/cart" style="color:var(--steel);text-decoration:none;font-weight:600;font-size:0.82rem;">Lihat Draft →</a></div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Pending Requests -->
+        <div class="col-lg-6">
+            <div class="req-card">
+                <div class="req-card-header">
+                    <div>
+                        <div class="section-label">PERMINTAAN HARGA</div>
+                        <div class="section-title mb-0" style="margin-bottom:0 !important;">Menunggu Penawaran</div>
+                    </div>
+                    <span class="badge-pill badge-pending">
+                        <i class="fa-solid fa-circle" style="font-size:0.4rem;"></i>
+                        <%= typeof pendingRequests !== 'undefined' ? pendingRequests.length : 0 %> Pending
+                    </span>
+                </div>
+                <div class="req-card-body">
+                    <% if (typeof pendingRequests !== 'undefined' && pendingRequests.length > 0) { %>
+                        <% pendingRequests.forEach(req => { %>
+                            <div class="req-row">
+                                <div class="req-row-left">
+                                    <div class="req-icon pending"><i class="fa-solid fa-hourglass-half"></i></div>
+                                    <div>
+                                        <div class="req-id">REQ-<%= req.id %></div>
+                                        <div class="req-date"><i class="fa-regular fa-calendar me-1"></i><%= req.date %></div>
+                                    </div>
+                                </div>
+                                <span class="badge-pill badge-pending">Menunggu Harga</span>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="empty-box">
+                            <i class="fa-solid fa-inbox"></i>
+                            <p>Tidak ada request yang sedang tertunda.</p>
+                            <a href="/dashboard/products" class="btn-outline-accent mt-2" style="font-size:0.8rem;padding:0.45rem 1rem;display:inline-flex;">
+                                <i class="fa-solid fa-plus me-1"></i> Buat Request Baru
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Orders -->
+        <div class="col-lg-6">
+            <div class="req-card">
+                <div class="req-card-header">
+                    <div>
+                        <div class="section-label">PESANAN AKTIF</div>
+                        <div class="section-title mb-0">Sedang Diproses</div>
+                    </div>
+                    <span class="badge-pill badge-done">
+                        <i class="fa-solid fa-circle" style="font-size:0.4rem;"></i>
+                        Aktif
+                    </span>
+                </div>
+                <div class="req-card-body">
+                    <% if (typeof activeOrders !== 'undefined' && activeOrders.length > 0) { %>
+                        <% activeOrders.forEach(order => { %>
+                            <div class="req-row">
+                                <div class="req-row-left">
+                                    <div class="req-icon active"><i class="fa-solid fa-truck-fast"></i></div>
+                                    <div>
+                                        <div class="req-id">#ORD-<%= order.id %></div>
+                                        <div class="req-date"><%= order.date %></div>
+                                    </div>
+                                </div>
+                                <span class="badge-pill badge-done"><i class="fa-solid fa-circle" style="font-size:0.4rem;"></i><%= order.status %></span>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="empty-box">
+                            <i class="fa-solid fa-box-open"></i>
+                            <p>Belum ada pesanan aktif saat ini.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Support -->
+        <div class="col-12">
+            <div class="wa-card">
+                <div class="wa-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div class="wa-text">
+                    <h5>Butuh Bantuan Teknis atau Spesifikasi?</h5>
+                    <p>Tim Sales &amp; Support kami siap membantu Anda mencocokkan spesifikasi material secara langsung via WhatsApp.</p>
+                </div>
+                <a href="https://wa.me/6281288821882?text=Halo%20Tim%20Sales%20PT%20Trimas,%20saya%20dari%20<%= encodeURIComponent((user && user.Company_Name) || '') %>%20ingin%20berkonsultasi%20mengenai%20produk."
+                   class="btn-wa" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-whatsapp"></i> Chat Sekarang
+                </a>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item active">
+        <i class="fa-solid fa-gauge"></i>
+        <span>Dashboard</span>
+    </a>
+    <a href="/dashboard/products" class="bnav-item">
+        <i class="fa-solid fa-box-open"></i>
+        <span>Katalog</span>
+    </a>
+    <a href="/dashboard/cart" class="bnav-item">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Draft</span>
+    </a>
+    <a href="/dashboard/history" class="bnav-item">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Riwayat</span>
+    </a>
+</nav>
+
+<!-- ONBOARDING MODAL -->
+<div class="modal fade" id="companyModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;overflow:hidden;">
+            <div class="modal-header border-0 text-white px-4 py-3" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));">
+                <h5 class="modal-title fw-bold">
+                    <i class="fa-solid fa-building me-2" style="color:var(--accent-soft);"></i>
+                    Lengkapi Profil Perusahaan
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <p style="font-size:0.875rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.65;">Sebelum mengakses portal, mohon lengkapi informasi perusahaan Anda untuk memulai.</p>
+                <form action="/complete-onboarding" method="POST">
+                    <input type="hidden" name="email" value="<%= typeof email !== 'undefined' ? email : (user ? user.Email : '') %>">
+                    <div class="mb-3">
+                        <label style="font-size:0.8rem;font-weight:700;display:block;margin-bottom:0.4rem;">Nama Perusahaan *</label>
+                        <div class="input-group-custom">
+                            <div class="input-icon"><i class="fa-solid fa-building"></i></div>
+                            <input type="text" name="company_name" class="input-field" placeholder="PT. Nama Perusahaan" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label style="font-size:0.8rem;font-weight:700;display:block;margin-bottom:0.4rem;">Nama Lengkap (PIC) *</label>
+                        <div class="input-group-custom">
+                            <div class="input-icon"><i class="fa-solid fa-user"></i></div>
+                            <input type="text" name="full_name" class="input-field" placeholder="Nama Lengkap Anda" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label style="font-size:0.8rem;font-weight:700;display:block;margin-bottom:0.4rem;">Nomor Telepon *</label>
+                        <div class="input-group-custom">
+                            <div class="input-icon"><i class="fa-solid fa-phone"></i></div>
+                            <input type="text" name="phone" class="input-field" placeholder="0812-xxxx-xxxx" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-accent w-100" style="justify-content:center;padding:0.85rem;font-size:0.95rem;border-radius:10px;">
+                        Simpan &amp; Lanjutkan <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Theme management
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        updateThemeUI();
+    })();
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeUI();
+    }
+
+    function updateThemeUI() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const label = document.getElementById('themeLabel');
+        if (label) label.textContent = isDark ? 'Mode Terang' : 'Mode Gelap';
+    }
+
+    // Onboarding modal
+    <% if ( (typeof isNewUser !== 'undefined' && isNewUser) || (typeof user !== 'undefined' && user && !user.Company_Name) ) { %>
+        document.addEventListener('DOMContentLoaded', function() {
+            new bootstrap.Modal(document.getElementById('companyModal')).show();
+        });
+    <% } %>
+</script>
+</body>
+</html>

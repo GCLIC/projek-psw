@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Pelanggan — Admin PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon"><i class="fa-solid fa-server"></i></div>
+            <div>
+                <div class="sidebar-brand">Admin Panel</div>
+                <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+            </div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <span class="nav-label">Utama</span>
+        <a href="/admin/dashboard" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <span class="nav-label">Manajemen</span>
+        <a href="/admin/requests" class="nav-link"><i class="fa-solid fa-file-invoice-dollar"></i> Permintaan Penawaran</a>
+        <a href="/admin/products" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Katalog Produk</a>
+        <a href="/admin/customers" class="nav-link active"><i class="fa-solid fa-users"></i> Daftar Pelanggan</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user-card">
+            <div class="admin-avatar"><i class="fa-solid fa-user-tie"></i></div>
+            <div>
+                <div class="admin-user-name"><%= adminName %></div>
+                <div class="admin-user-role">Administrator</div>
+            </div>
+        </div>
+        <a href="/admin-logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout System</a>
+    </div>
+</aside>
+
+<div class="admin-main">
+    <div class="admin-topbar">
+        <div class="topbar-left">
+            <div class="topbar-breadcrumb"><a href="/admin/dashboard">Dashboard</a><span class="sep">/</span></div>
+            <span class="topbar-page">Daftar Pelanggan</span>
+        </div>
+        <div class="topbar-right">
+            <div class="search-wrap" style="width:260px;">
+                <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="custSearch" class="search-input" placeholder="Cari perusahaan atau PIC...">
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <div class="page-header">
+            <div>
+                <div class="page-overline">DATABASE MITRA</div>
+                <h1 class="page-title">Daftar Pelanggan</h1>
+                <p class="page-sub">Seluruh perusahaan yang memiliki akses ke portal B2B. Total: <strong style="color:var(--primary);"><%= customers.length %> mitra</strong></p>
+            </div>
+        </div>
+
+        <div class="data-card">
+            <div class="data-table table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:8%;">ID</th>
+                            <th style="width:34%;">Perusahaan &amp; PIC</th>
+                            <th style="width:26%;">Kontak</th>
+                            <th style="width:18%;">Telepon</th>
+                            <th style="width:14%;text-align:center;">Transaksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="custTableBody">
+                        <% if (customers.length > 0) { %>
+                            <% customers.forEach(cust => { %>
+                                <tr>
+                                    <td style="font-size:0.75rem;font-weight:700;color:var(--muted);">
+                                        CUST-<%= String(cust.Cust_ID).padStart(3,'0') %>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.15rem 0;">
+                                            <div class="cust-avatar">
+                                                <%= cust.Company_Name.charAt(0).toUpperCase() %>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight:700;color:var(--primary);font-size:0.875rem;" class="cust-company"><%= cust.Company_Name %></div>
+                                                <div style="font-size:0.75rem;color:var(--muted);margin-top:0.1rem;">
+                                                    <i class="fa-regular fa-user me-1"></i><%= cust.PIC_Name %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="mailto:<%= cust.Email %>" style="color:var(--steel);text-decoration:none;font-size:0.82rem;font-weight:500;display:flex;align-items:center;gap:0.4rem;">
+                                            <i class="fa-regular fa-envelope" style="font-size:0.75rem;"></i>
+                                            <%= cust.Email %>
+                                        </a>
+                                    </td>
+                                    <td style="font-size:0.875rem;">
+                                        <% if (cust.Phones) { %>
+                                            <a href="https://wa.me/<%= cust.Phones.replace(/[^0-9]/g,'') %>" target="_blank"
+                                               style="color:var(--text);text-decoration:none;display:flex;align-items:center;gap:0.4rem;">
+                                                <i class="fa-brands fa-whatsapp" style="color:#25d366;font-size:0.9rem;"></i>
+                                                <%= cust.Phones %>
+                                            </a>
+                                        <% } else { %>
+                                            <span style="color:var(--muted);font-size:0.82rem;font-style:italic;">—</span>
+                                        <% } %>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <% if (cust.Total_Orders > 0) { %>
+                                            <span class="badge-pill badge-info"><%= cust.Total_Orders %> RFQ</span>
+                                        <% } else { %>
+                                            <span style="font-size:0.75rem;color:var(--muted);">Belum ada</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" style="text-align:center;padding:4rem;color:var(--muted);">
+                                    <i class="fa-solid fa-users-slash" style="font-size:2.5rem;opacity:0.15;display:block;margin-bottom:0.75rem;"></i>
+                                    <div style="font-weight:600;">Belum ada pelanggan terdaftar</div>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('custSearch').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('#custTableBody tr').forEach(row => {
+            const c = row.querySelector('.cust-company');
+            row.style.display = (!c || c.textContent.toLowerCase().includes(q)) ? '' : 'none';
+        });
+    });
+</script>
+</body>
+</html>

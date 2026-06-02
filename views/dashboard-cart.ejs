@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draft Request — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        .cart-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); gap: 1rem;
+        }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item-left { display: flex; align-items: center; gap: 0.85rem; flex: 1; min-width: 0; }
+        .cart-item-img {
+            width: 52px; height: 52px; border-radius: 10px; object-fit: cover;
+            border: 1px solid var(--border); flex-shrink: 0; background: var(--surface-2);
+        }
+        .cart-item-icon {
+            width: 52px; height: 52px; background: var(--surface-2); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent); font-size: 1.1rem; flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        html[data-theme="dark"] .cart-item-icon { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+        .cart-item-name { font-weight: 700; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cart-item-sku { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
+
+        .qty-control { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+        .qty-btn {
+            width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid var(--border);
+            background: var(--surface); color: var(--text); font-size: 0.9rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: all 0.15s; padding: 0;
+        }
+        .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .qty-btn.remove { border-color: #fca5a5; color: #ef4444; margin-left: 0.5rem; }
+        .qty-btn.remove:hover { background: #fef2f2; }
+        .qty-value { font-weight: 800; font-size: 0.9rem; color: var(--text); min-width: 24px; text-align: center; }
+
+        .submit-panel {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+            overflow: hidden; position: sticky; top: 2rem;
+        }
+        html[data-theme="dark"] .submit-panel { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+        @media (max-width: 767px) { .submit-panel { position: static; } }
+        .submit-panel-head {
+            padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        }
+        .submit-panel-head .eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 0.2rem; }
+        .submit-panel-head h3 { font-size: 1rem; font-weight: 800; color: #fff; margin: 0; }
+        .submit-panel-body { padding: 1.25rem; }
+
+        .summary-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.6rem 0; font-size: 0.875rem; border-bottom: 1px solid var(--border);
+        }
+        .summary-row:last-of-type { border-bottom: 2px solid var(--border); font-weight: 700; }
+        .summary-label { color: var(--muted); }
+        .summary-value { font-weight: 600; color: var(--text); }
+
+        .empty-cart {
+            text-align: center; padding: 3rem 1.5rem;
+        }
+        .empty-cart i { font-size: 3rem; opacity: 0.15; display: block; margin-bottom: 0.75rem; }
+        .empty-cart h5 { font-weight: 800; color: var(--primary); margin-bottom: 0.35rem; font-size: 1rem; }
+        html[data-theme="dark"] .empty-cart h5 { color: #e2e8f0; }
+        .empty-cart p { font-size: 0.875rem; color: var(--muted); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= user.Company_Name %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link active">
+        <i class="fa-solid fa-cart-shopping"></i> Draft Request
+        <% if (cart.length > 0) { %><span class="badge bg-danger rounded-pill ms-auto" style="font-size:0.68rem;"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="sidebar-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- MOBILE TOP BAR -->
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div class="mobile-topbar-name">Draft Request</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+</div>
+
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <div class="page-overline">PENGAJUAN HARGA</div>
+            <h1 class="page-title">Draft Penawaran</h1>
+            <p class="page-sub">Tinjau item terpilih sebelum mengajukan permintaan harga resmi.</p>
+        </div>
+        <% if (cart.length > 0) { %>
+            <span class="badge-pill badge-info" style="font-size:0.82rem;padding:0.5rem 1rem;">
+                <i class="fa-solid fa-cart-shopping"></i> <%= cart.length %> Item
+            </span>
+        <% } %>
+    </div>
+
+    <div class="row g-4">
+        <!-- Item list -->
+        <div class="col-lg-8">
+            <div class="card-box p-0">
+                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <span class="section-label">ITEM DIPILIH</span>
+                        <div class="section-title mb-0">Daftar Komponen</div>
+                    </div>
+                    <span style="font-size:0.8rem;color:var(--muted);">
+                        <strong style="color:var(--accent)"><%= cart.length %></strong> item
+                    </span>
+                </div>
+
+                <% if (cart.length > 0) { %>
+                    <% cart.forEach((item, index) => { %>
+                        <div class="cart-item">
+                            <div class="cart-item-left">
+                                <% if (item.img) { %>
+                                    <img src="/images/<%= encodeURIComponent(item.img) %>" class="cart-item-img" alt="<%= item.name %>">
+                                <% } else { %>
+                                    <div class="cart-item-icon"><i class="fa-solid fa-gear"></i></div>
+                                <% } %>
+                                <div style="min-width:0;">
+                                    <div class="cart-item-name"><%= item.name %></div>
+                                    <div class="cart-item-sku">SKU-<%= String(item.id).padStart(3,'0') %></div>
+                                </div>
+                            </div>
+                            <div class="qty-control">
+                                <form action="/cart/update" method="POST" style="display:contents;">
+                                    <input type="hidden" name="product_id" value="<%= item.id %>">
+                                    <button type="submit" name="action" value="decrease" class="qty-btn">−</button>
+                                    <span class="qty-value"><%= item.qty %></span>
+                                    <button type="submit" name="action" value="increase" class="qty-btn">+</button>
+                                </form>
+                                <form action="/cart/update" method="POST" style="display:contents;">
+                                    <input type="hidden" name="product_id" value="<%= item.id %>">
+                                    <button type="submit" name="action" value="remove" class="qty-btn remove" title="Hapus">
+                                        <i class="fa-solid fa-trash" style="font-size:0.7rem;"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="empty-cart">
+                        <i class="fa-solid fa-box-open"></i>
+                        <h5>Draft Masih Kosong</h5>
+                        <p>Pilih komponen dari katalog produk untuk memulai permintaan harga.</p>
+                        <a href="/dashboard/products" class="btn-accent" style="font-size:0.875rem;">
+                            <i class="fa-solid fa-box-open"></i> Lihat E-Katalog
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Submit form -->
+        <div class="col-lg-4">
+            <div class="submit-panel">
+                <div class="submit-panel-head">
+                    <div class="eyebrow">DETAIL PENGAJUAN</div>
+                    <h3><i class="fa-solid fa-paper-plane me-2"></i>Ajukan RFQ</h3>
+                </div>
+                <div class="submit-panel-body">
+                    <div class="summary-row mb-2">
+                        <span class="summary-label">Total Item</span>
+                        <span class="summary-value"><%= cart.length %> Komponen</span>
+                    </div>
+                    <div class="summary-row mb-3">
+                        <span class="summary-label">Estimasi Harga</span>
+                        <span class="summary-value" style="color:var(--accent);">Setelah RFQ</span>
+                    </div>
+
+                    <form action="/submit-final-request" method="POST">
+                        <div class="mb-3">
+                            <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:0.4rem;color:var(--text);">Sumber Pesanan</label>
+                            <input type="text" class="form-control" value="Portal Web B2B" disabled style="font-size:0.875rem;opacity:0.6;">
+                        </div>
+                        <div class="mb-4">
+                            <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:0.4rem;color:var(--text);">
+                                Catatan Tambahan
+                                <span style="font-weight:400;color:var(--muted);margin-left:0.3rem;">(Opsional)</span>
+                            </label>
+                            <textarea name="notes" class="form-control" rows="4"
+                                      placeholder="Contoh: Mohon sertakan Mill Test Certificate untuk material ini, atau spesifikasi khusus yang dibutuhkan..."
+                                      style="font-size:0.875rem;resize:none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn-accent w-100" style="justify-content:center;padding:0.85rem;font-size:0.95rem;border-radius:10px;" <%= cart.length === 0 ? 'disabled' : '' %>>
+                            <i class="fa-solid fa-paper-plane"></i> Ajukan Penawaran
+                        </button>
+                        <% if (cart.length === 0) { %>
+                            <p style="font-size:0.78rem;color:var(--muted);text-align:center;margin-top:0.75rem;margin-bottom:0;">
+                                Tambahkan produk ke draft terlebih dahulu.
+                            </p>
+                        <% } else { %>
+                            <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:0.75rem;margin-bottom:0;line-height:1.5;">
+                                <i class="fa-solid fa-clock me-1"></i>
+                                Tim sales akan merespons dalam 1×24 jam.
+                            </p>
+                        <% } %>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a>
+    <a href="/dashboard/products" class="bnav-item"><i class="fa-solid fa-box-open"></i><span>Katalog</span></a>
+    <a href="/dashboard/cart" class="bnav-item active">
+        <i class="fa-solid fa-cart-shopping"></i><span>Draft</span>
+        <% if (cart.length > 0) { %><span class="bnav-badge"><%= cart.length %></span><% } %>
+    </a>
+    <a href="/dashboard/history" class="bnav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+</nav>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+            document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+</script>
+</body>
+</html>

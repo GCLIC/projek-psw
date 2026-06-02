@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran — PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <style>
+        .payment-wrap {
+            max-width: 560px; margin: 0 auto;
+        }
+        .status-banner {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 1.5px solid #fcd34d;
+            border-radius: 14px; padding: 1.25rem 1.5rem;
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .status-banner-icon {
+            width: 44px; height: 44px; background: #f59e0b;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1.1rem; flex-shrink: 0;
+        }
+        .status-banner-text strong { display: block; font-weight: 800; color: #92400e; font-size: 0.95rem; }
+        .status-banner-text span { font-size: 0.8rem; color: #b45309; }
+
+        .payment-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; overflow: hidden; margin-bottom: 1.25rem;
+        }
+        html[data-theme="dark"] .payment-card { background: rgba(15,45,82,0.45); border-color: rgba(255,255,255,0.09); }
+
+        .payment-card-header {
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        .payment-card-header .header-icon {
+            width: 36px; height: 36px; border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .payment-card-body { padding: 1.5rem; }
+
+        /* BCA VA block */
+        .bca-block {
+            background: linear-gradient(135deg, #005ea2 0%, #003f73 100%);
+            border-radius: 12px; padding: 1.5rem;
+            color: #fff; text-align: center; margin-bottom: 1.25rem;
+        }
+        .bca-logo-row {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.6rem; margin-bottom: 1rem;
+        }
+        .bca-logo-box {
+            background: #fff; border-radius: 8px;
+            padding: 0.3rem 0.75rem;
+            font-size: 1.1rem; font-weight: 900; color: #005ea2;
+            letter-spacing: 1px;
+        }
+        .bca-label { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-bottom: 0.35rem; }
+        .bca-number {
+            font-size: 1.85rem; font-weight: 800; letter-spacing: 4px;
+            color: #fff; font-family: 'Inter', monospace;
+            margin-bottom: 0.35rem;
+        }
+        .bca-name { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+
+        .copy-btn {
+            margin-top: 1rem; background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25); color: #fff;
+            border-radius: 8px; padding: 0.5rem 1.25rem;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.25); }
+
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row .label { color: var(--muted); }
+        .detail-row .value { font-weight: 700; color: var(--text); }
+        .detail-row .value.total { color: #005ea2; font-size: 1rem; }
+
+        .how-to { counter-reset: steps; list-style: none; padding: 0; margin: 0; }
+        .how-to li {
+            counter-increment: steps;
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            font-size: 0.85rem; color: var(--text); padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .how-to li:last-child { border-bottom: none; }
+        .how-to li::before {
+            content: counter(steps);
+            width: 24px; height: 24px; background: var(--primary); color: #fff;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 800; flex-shrink: 0; margin-top: 0.05rem;
+        }
+
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--muted); text-decoration: none; font-size: 0.875rem;
+            font-weight: 600; transition: color 0.2s;
+        }
+        .btn-back:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fa-solid fa-pipe-section"></i></div>
+        <div>
+            <div class="sidebar-brand">Portal Mitra</div>
+            <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+        </div>
+    </div>
+    <div class="sidebar-company">
+        <div class="sidebar-company-label">Perusahaan Anda</div>
+        <div class="sidebar-company-name"><%= user.Company_Name %></div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <a href="/dashboard" class="sidebar-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+    <a href="/dashboard/products" class="sidebar-link"><i class="fa-solid fa-box-open"></i> E-Katalog Produk</a>
+    <a href="/dashboard/cart" class="sidebar-link"><i class="fa-solid fa-cart-shopping"></i> Draft Request</a>
+    <a href="/dashboard/history" class="sidebar-link active"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</aside>
+
+<div class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+        <div class="mobile-topbar-icon"><i class="fa-solid fa-credit-card"></i></div>
+        <div class="mobile-topbar-name">Pembayaran</div>
+    </div>
+    <div class="mobile-topbar-actions">
+        <button class="topbar-btn" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+</div>
+
+<main class="main-content">
+    <div class="payment-wrap">
+
+        <a href="/dashboard/history" class="btn-back mb-4" style="display:inline-flex;">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Riwayat
+        </a>
+
+        <div class="page-header" style="margin-bottom:1.5rem;">
+            <div>
+                <div class="page-overline">PEMBAYARAN ORDER</div>
+                <h1 class="page-title">REQ-<%= order.Order_ID %></h1>
+                <p class="page-sub">Selesaikan pembayaran sebelum batas waktu yang ditentukan.</p>
+            </div>
+        </div>
+
+        <!-- Awaiting Payment Status -->
+        <div class="status-banner">
+            <div class="status-banner-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="status-banner-text">
+                <strong>Menunggu Pembayaran</strong>
+                <span>Silakan transfer ke nomor Virtual Account BCA di bawah ini.</span>
+            </div>
+        </div>
+
+        <!-- BCA Virtual Account -->
+        <div class="payment-card">
+            <div class="payment-card-header">
+                <div class="header-icon" style="background:#e0f0ff;color:#005ea2;">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                    <div style="font-weight:700;font-size:0.9rem;color:var(--text);">BCA Virtual Account</div>
+                    <div style="font-size:0.75rem;color:var(--muted);">Transfer tepat sesuai nominal tagihan</div>
+                </div>
+            </div>
+            <div class="payment-card-body">
+                <div class="bca-block">
+                    <div class="bca-logo-row">
+                        <div class="bca-logo-box">BCA</div>
+                        <span style="font-size:0.8rem;color:rgba(255,255,255,0.7);font-weight:600;">Virtual Account</span>
+                    </div>
+                    <div class="bca-label">Nomor Virtual Account</div>
+                    <div class="bca-number" id="vaNumber">1220 8134 7629 5401</div>
+                    <div class="bca-name">a.n. PT TRIMAS MITRA PERKASA</div>
+                    <button class="copy-btn" onclick="copyVA()">
+                        <i class="fa-regular fa-copy"></i> Salin Nomor VA
+                    </button>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">No. Pesanan</span>
+                    <span class="value">REQ-<%= order.Order_ID %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Perusahaan</span>
+                    <span class="value"><%= user.Company_Name %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Jumlah Item</span>
+                    <span class="value"><%= details.length %> Komponen</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Total Tagihan</span>
+                    <span class="value total"><%= totalFormatted %></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to Pay -->
+        <div class="payment-card">
+            <div class="payment-card-header">
+                <div class="header-icon" style="background:#f0fdf4;color:#16a34a;">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div>
+                    <div style="font-weight:700;font-size:0.9rem;color:var(--text);">Cara Pembayaran</div>
+                    <div style="font-size:0.75rem;color:var(--muted);">Melalui m-BCA / ATM BCA</div>
+                </div>
+            </div>
+            <div class="payment-card-body">
+                <ol class="how-to">
+                    <li>Buka aplikasi <strong>myBCA</strong> atau kunjungi ATM BCA terdekat.</li>
+                    <li>Pilih menu <strong>Transfer → BCA Virtual Account</strong>.</li>
+                    <li>Masukkan nomor VA: <strong>1220 8134 7629 5401</strong>.</li>
+                    <li>Pastikan nama penerima: <strong>PT TRIMAS MITRA PERKASA</strong>.</li>
+                    <li>Masukkan nominal sesuai tagihan, lalu konfirmasi pembayaran.</li>
+                    <li>Simpan bukti transfer dan kirim ke tim kami via WhatsApp.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div style="text-align:center;padding:1.25rem;color:var(--muted);font-size:0.82rem;">
+            Ada kendala? Hubungi tim kami di
+            <a href="https://wa.me/6281288821882" target="_blank" style="color:#16a34a;font-weight:700;">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<nav class="bottom-nav">
+    <a href="/dashboard" class="bnav-item"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a>
+    <a href="/dashboard/products" class="bnav-item"><i class="fa-solid fa-box-open"></i><span>Katalog</span></a>
+    <a href="/dashboard/cart" class="bnav-item"><i class="fa-solid fa-cart-shopping"></i><span>Draft</span></a>
+    <a href="/dashboard/history" class="bnav-item active"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+</nav>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+            document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+    function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+    function copyVA() {
+        navigator.clipboard.writeText('12208134762954011').then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin!';
+            setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin Nomor VA'; }, 2000);
+        });
+    }
+</script>
+</body>
+</html>

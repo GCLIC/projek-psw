@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permintaan Penawaran — Admin PT. Trimas Mitra Perkasa</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
+</head>
+<body>
+
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon"><i class="fa-solid fa-server"></i></div>
+            <div>
+                <div class="sidebar-brand">Admin Panel</div>
+                <div class="sidebar-brand-sub">PT. Trimas Mitra Perkasa</div>
+            </div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <span class="nav-label">Utama</span>
+        <a href="/admin/dashboard" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <span class="nav-label">Manajemen</span>
+        <a href="/admin/requests" class="nav-link active">
+            <i class="fa-solid fa-file-invoice-dollar"></i> Permintaan Penawaran
+            <% const pendingCount = requests.filter(r => r.color === 'warning').length; %>
+            <% if (pendingCount > 0) { %><span class="nav-badge"><%= pendingCount %></span><% } %>
+        </a>
+        <a href="/admin/products" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Katalog Produk</a>
+        <a href="/admin/customers" class="nav-link"><i class="fa-solid fa-users"></i> Daftar Pelanggan</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user-card">
+            <div class="admin-avatar"><i class="fa-solid fa-user-tie"></i></div>
+            <div>
+                <div class="admin-user-name"><%= adminName %></div>
+                <div class="admin-user-role">Administrator</div>
+            </div>
+        </div>
+        <a href="/admin-logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout System</a>
+    </div>
+</aside>
+
+<div class="admin-main">
+    <div class="admin-topbar">
+        <div class="topbar-left">
+            <div class="topbar-breadcrumb"><a href="/admin/dashboard">Dashboard</a><span class="sep">/</span></div>
+            <span class="topbar-page">Permintaan Penawaran</span>
+        </div>
+        <div class="topbar-right">
+            <div class="search-wrap" style="width:250px;">
+                <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="reqSearch" class="search-input" placeholder="Cari ID atau perusahaan...">
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <div class="page-header">
+            <div>
+                <div class="page-overline">KELOLA RFQ</div>
+                <h1 class="page-title">Permintaan Penawaran</h1>
+                <p class="page-sub">Tinjau dan berikan harga untuk permintaan komponen dari pelanggan.</p>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <a href="/admin/requests" class="filter-tab <%= currentFilter === 'semua' ? 't-all' : '' %>">
+                Semua
+                <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:0.05rem 0.45rem;font-size:0.65rem;"><%= requests.length %></span>
+            </a>
+            <a href="/admin/requests?status=pending" class="filter-tab <%= currentFilter === 'pending' ? 't-pending' : '' %>">
+                <i class="fa-solid fa-hourglass-half"></i> Menunggu Review
+            </a>
+            <a href="/admin/requests?status=selesai" class="filter-tab <%= currentFilter === 'selesai' ? 't-done' : '' %>">
+                <i class="fa-solid fa-check-double"></i> Selesai
+            </a>
+        </div>
+
+        <div class="data-card">
+            <div class="data-table table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:12%;">No. Request</th>
+                            <th style="width:30%;">Nama Perusahaan</th>
+                            <th style="width:16%;">Tanggal Ajuan</th>
+                            <th style="width:10%;text-align:center;">Item</th>
+                            <th style="width:16%;">Status</th>
+                            <th style="width:16%;text-align:right;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reqTableBody">
+                        <% if (requests.length > 0) { %>
+                            <% requests.forEach(req => { %>
+                                <tr class="<%= req.color === 'warning' ? 'row-urgent' : '' %> req-row">
+                                    <td style="font-weight:800;color:var(--steel);font-variant-numeric:tabular-nums;">REQ-<%= req.id %></td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                                            <div style="width:30px;height:30px;background:var(--steel-bg);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.75rem;color:var(--steel);">
+                                                <i class="fa-regular fa-building"></i>
+                                            </div>
+                                            <span style="font-weight:600;" class="req-company"><%= req.company %></span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--muted);font-size:0.845rem;font-variant-numeric:tabular-nums;"><%= req.date %></td>
+                                    <td style="text-align:center;">
+                                        <span class="badge-pill badge-info"><%= req.items %> item</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge-pill badge-<%= req.color === 'success' ? 'done' : req.color === 'danger' ? 'danger' : 'pending' %>">
+                                            <i class="fa-solid fa-circle" style="font-size:0.38rem;"></i>
+                                            <%= req.status %>
+                                        </span>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a href="/admin/requests/<%= req.id %>" class="btn-primary" style="font-size:0.78rem;padding:0.4rem 0.85rem;">
+                                            <% if (req.color === 'warning') { %>
+                                                <i class="fa-solid fa-pen-to-square"></i> Beri Harga
+                                            <% } else { %>
+                                                <i class="fa-solid fa-eye"></i> Lihat Detail
+                                            <% } %>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:4rem;color:var(--muted);">
+                                    <i class="fa-solid fa-inbox" style="font-size:2.5rem;opacity:0.15;display:block;margin-bottom:0.75rem;"></i>
+                                    <div style="font-weight:600;">Tidak ada permintaan</div>
+                                    <div style="font-size:0.82rem;margin-top:0.3rem;">Belum ada permintaan penawaran yang masuk.</div>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('reqSearch').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('.req-row').forEach(row => {
+            const c = row.querySelector('.req-company');
+            const id = row.querySelector('td:first-child');
+            const match = (c && c.textContent.toLowerCase().includes(q)) ||
+                          (id && id.textContent.toLowerCase().includes(q));
+            row.style.display = match ? '' : 'none';
+        });
+    });
+</script>
+</body>
+</html>
