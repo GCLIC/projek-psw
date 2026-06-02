@@ -6,7 +6,7 @@ const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const Brevo = require('@getbrevo/brevo');
+const { TransactionalEmailsApi, SendSmtpEmail, ApiClient } = require('@getbrevo/brevo');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -46,11 +46,11 @@ const upload = multer({
     }
 });
 
-const brevoClient = new Brevo.TransactionalEmailsApi();
+const brevoClient = new TransactionalEmailsApi();
 brevoClient.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
 
 async function sendOTPEmail(toEmail, otpCode) {
-    const email = new Brevo.SendSmtpEmail();
+    const email = new SendSmtpEmail();
     email.sender = { name: 'PT Trimas Mitra Perkasa', email: process.env.MAIL_USER };
     email.to = [{ email: toEmail }];
     email.subject = 'Kode OTP Login Portal B2B';
