@@ -407,9 +407,10 @@ app.post('/submit-final-request', async (req, res) => {
         await connection.beginTransaction();
 
         // 2. Insert ke SALES_ORDER (Tabel Induk)
+        const notes = req.body.notes ? req.body.notes.trim() : null;
         const [orderResult] = await connection.query(
-            'INSERT INTO SALES_ORDER (Cust_ID, Order_Status, Order_Source) VALUES (?, ?, ?)',
-            [custId, 'Pending Review', 'Portal Web']
+            'INSERT INTO SALES_ORDER (Cust_ID, Order_Status, Order_Source, Notes) VALUES (?, ?, ?, ?)',
+            [custId, 'Pending Review', 'Portal Web', notes]
         );
         
         // Ambil ID pesanan yang baru saja dibuat
