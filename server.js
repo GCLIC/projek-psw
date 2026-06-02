@@ -47,11 +47,14 @@ const upload = multer({
 });
 
 const mailer = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS
-    }
+    },
+    tls: { rejectUnauthorized: false }
 });
 
 const pool = mysql.createPool({
@@ -96,7 +99,8 @@ app.post('/request-otp', async (req, res) => {
         } else {
             tempOTPStore.set(email, { otpCode: otpCode, expiryTime: expiryTime });
         }
-        await mailer.sendMail({
+        // Send email but don't let it block or crash the request
+        mailer.sendMail({
             from: `"PT Trimas Mitra Perkasa" <${process.env.MAIL_USER}>`,
             to: email,
             subject: 'Kode OTP Login Portal B2B',
@@ -110,7 +114,9 @@ app.post('/request-otp', async (req, res) => {
                     <p style="color: #6b7280; font-size: 13px;">Kode ini berlaku selama <strong>15 menit</strong>. Jangan bagikan kode ini kepada siapapun.</p>
                 </div>
             `
-        });
+        }).catch(err => console.error('Mail error:', err.message, err.code));
+
+        // Respond immediately — don't wait for email delivery
         res.render('otp-verify', { email: email });
     } catch (err) {
         console.error(err);
