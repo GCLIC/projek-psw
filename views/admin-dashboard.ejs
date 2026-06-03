@@ -11,6 +11,15 @@
 </head>
 <body>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="mobile-admin-topbar">
+    <div class="mobile-topbar-left">
+        <button class="sidebar-toggle-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <span class="mobile-topbar-title">Dashboard</span>
+    </div>
+    <div class="mobile-topbar-avatar"><i class="fa-solid fa-user-tie"></i></div>
+</div>
+
 <!-- SIDEBAR -->
 <aside class="admin-sidebar">
     <div class="sidebar-header">
@@ -193,6 +202,16 @@
     </div>
 </div>
 
+<nav class="admin-bottom-nav">
+    <a href="/admin/dashboard" class="admin-bnav-item active"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+    <a href="/admin/requests" class="admin-bnav-item">
+        <i class="fa-solid fa-file-invoice-dollar"></i><span>Penawaran</span>
+        <% if (pendingOrders > 0) { %><span class="admin-bnav-badge"><%= pendingOrders %></span><% } %>
+    </a>
+    <a href="/admin/products" class="admin-bnav-item"><i class="fa-solid fa-boxes-stacked"></i><span>Produk</span></a>
+    <a href="/admin/customers" class="admin-bnav-item"><i class="fa-solid fa-users"></i><span>Pelanggan</span></a>
+</nav>
+
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script>
     function updateClock() {
@@ -200,6 +219,16 @@
     }
     updateClock();
     setInterval(updateClock, 1000);
+    function openSidebar() {
+        document.querySelector('.admin-sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+        document.querySelector('.admin-sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
 </script>
 </body>
 </html>
