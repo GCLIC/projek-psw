@@ -153,9 +153,20 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME || 'trimas_db'
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
     if (!process.env.SESSION_SECRET) console.warn('WARNING: SESSION_SECRET not set — using insecure default');
     console.log(`Server running at http://localhost:${port}`);
+    // Add Sort_Order column to sortable tables if not present
+    try {
+        const migrations = [
+            "ALTER TABLE product_feature ADD COLUMN Sort_Order INT DEFAULT 0",
+            "ALTER TABLE product_application ADD COLUMN Sort_Order INT DEFAULT 0",
+            "ALTER TABLE spec_item ADD COLUMN Sort_Order INT DEFAULT 0",
+        ];
+        for (const sql of migrations) {
+            try { await pool.query(sql); } catch (e) { /* column already exists */ }
+        }
+    } catch (e) { console.warn('Migration skipped:', e.message); }
 });
 
 // --- Global guard: logged-in customers cannot access any /admin/* route ---
@@ -369,9 +380,9 @@ app.get('/dashboard/products/:id', async (req, res) => {
 
         if (!products.length) return res.redirect('/dashboard/products');
 
-        const [specs] = await pool.query('SELECT * FROM spec_item WHERE Product_ID = ?', [req.params.id]);
-        const [features] = await pool.query('SELECT * FROM product_feature WHERE Product_ID = ?', [req.params.id]);
-        const [applications] = await pool.query('SELECT * FROM product_application WHERE Product_ID = ?', [req.params.id]);
+        const [specs] = await pool.query('SELECT * FROM spec_item WHERE Product_ID = ? ORDER BY Sort_Order ASC, Spec_Name ASC', [req.params.id]);
+        const [features] = await pool.query('SELECT * FROM product_feature WHERE Product_ID = ? ORDER BY Sort_Order ASC', [req.params.id]);
+        const [applications] = await pool.query('SELECT * FROM product_application WHERE Product_ID = ? ORDER BY Sort_Order ASC', [req.params.id]);
 
         res.render('dashboard-product-detail', {
             user: users[0],
@@ -834,18 +845,18 @@ app.post('/admin/products/add', (req, res, next) => {
         const newProductId = prodResult.insertId;
 
         // 4. Insert ke tabel PRODUCT_FEATURE (Looping)
-        for (const feature of features) {
+        for (let i = 0; i < features.length; i++) {
             await connection.query(
-                'INSERT INTO product_feature (Product_ID, Feature_Desc) VALUES (?, ?)',
-                [newProductId, feature]
+                'INSERT INTO product_feature (Product_ID, Feature_Desc, Sort_Order) VALUES (?, ?, ?)',
+                [newProductId, features[i], i]
             );
         }
 
         // 5. Insert ke tabel PRODUCT_APPLICATION (Looping)
-        for (const app of applications) {
+        for (let i = 0; i < applications.length; i++) {
             await connection.query(
-                'INSERT INTO product_application (Product_ID, Application_Desc) VALUES (?, ?)',
-                [newProductId, app]
+                'INSERT INTO product_application (Product_ID, Application_Desc, Sort_Order) VALUES (?, ?, ?)',
+                [newProductId, applications[i], i]
             );
         }
 
@@ -853,8 +864,8 @@ app.post('/admin/products/add', (req, res, next) => {
         for (let i = 0; i < spec_names.length; i++) {
             if (spec_names[i].trim() !== '' && spec_values[i].trim() !== '') {
                 await connection.query(
-                    'INSERT INTO spec_item (Product_ID, Spec_Name, Spec_Value) VALUES (?, ?, ?)',
-                    [newProductId, spec_names[i], spec_values[i]]
+                    'INSERT INTO spec_item (Product_ID, Spec_Name, Spec_Value, Sort_Order) VALUES (?, ?, ?, ?)',
+                    [newProductId, spec_names[i], spec_values[i], i]
                 );
             }
         }
@@ -1082,9 +1093,9 @@ app.get('/admin/products/edit/:id', async (req, res) => {
         const [products] = await pool.query('SELECT * FROM product WHERE Product_ID = ?', [productId]);
         if (products.length === 0) return res.status(404).send("Produk tidak ditemukan");
 
-        const [features] = await pool.query('SELECT Feature_Desc FROM product_feature WHERE Product_ID = ?', [productId]);
-        const [apps] = await pool.query('SELECT Application_Desc FROM product_application WHERE Product_ID = ?', [productId]);
-        const [specs] = await pool.query('SELECT Spec_Name, Spec_Value FROM spec_item WHERE Product_ID = ?', [productId]);
+        const [features] = await pool.query('SELECT Feature_Desc FROM product_feature WHERE Product_ID = ? ORDER BY Sort_Order ASC', [productId]);
+        const [apps] = await pool.query('SELECT Application_Desc FROM product_application WHERE Product_ID = ? ORDER BY Sort_Order ASC', [productId]);
+        const [specs] = await pool.query('SELECT Spec_Name, Spec_Value FROM spec_item WHERE Product_ID = ? ORDER BY Sort_Order ASC', [productId]);
 
         res.render('admin-product-edit', {
             adminName: req.session.adminName,
@@ -1129,15 +1140,15 @@ app.post('/admin/products/edit/:id', (req, res, next) => {
         await connection.query('DELETE FROM product_application WHERE Product_ID = ?', [productId]);
         await connection.query('DELETE FROM spec_item WHERE Product_ID = ?', [productId]);
 
-        for (const feature of features) {
-            await connection.query('INSERT INTO product_feature (Product_ID, Feature_Desc) VALUES (?, ?)', [productId, feature]);
+        for (let i = 0; i < features.length; i++) {
+            await connection.query('INSERT INTO product_feature (Product_ID, Feature_Desc, Sort_Order) VALUES (?, ?, ?)', [productId, features[i], i]);
         }
-        for (const app of applications) {
-            await connection.query('INSERT INTO product_application (Product_ID, Application_Desc) VALUES (?, ?)', [productId, app]);
+        for (let i = 0; i < applications.length; i++) {
+            await connection.query('INSERT INTO product_application (Product_ID, Application_Desc, Sort_Order) VALUES (?, ?, ?)', [productId, applications[i], i]);
         }
         for (let i = 0; i < spec_names.length; i++) {
             if (spec_names[i].trim() !== '' && spec_values[i].trim() !== '') {
-                await connection.query('INSERT INTO spec_item (Product_ID, Spec_Name, Spec_Value) VALUES (?, ?, ?)', [productId, spec_names[i], spec_values[i]]);
+                await connection.query('INSERT INTO spec_item (Product_ID, Spec_Name, Spec_Value, Sort_Order) VALUES (?, ?, ?, ?)', [productId, spec_names[i], spec_values[i], i]);
             }
         }
 

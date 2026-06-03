@@ -268,7 +268,7 @@
                         <% features.forEach(f => { %>
                             <span class="tag-pill">
                                 <i class="fa-solid fa-check-circle"></i>
-                                <%= f.Feature || f.Feature_Name || f.feature %>
+                                <%= f.Feature_Desc %>
                             </span>
                         <% }) %>
                     </div>
@@ -288,7 +288,7 @@
                         <% applications.forEach(a => { %>
                             <span class="app-pill">
                                 <i class="fa-solid fa-industry"></i>
-                                <%= a.Application || a.Application_Name || a.application %>
+                                <%= a.Application_Desc %>
                             </span>
                         <% }) %>
                     </div>
