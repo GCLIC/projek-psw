@@ -159,7 +159,18 @@
             </div>
         </div>
 
-        <!-- Awaiting Payment Status -->
+        <% const isPaid = (invoice && invoice.Payment_Status === 'Paid') || typeof paid !== 'undefined'; %>
+
+        <!-- Payment Status Banner -->
+        <% if (isPaid) { %>
+        <div class="status-banner" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac;">
+            <div class="status-banner-icon" style="background:#16a34a;"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="status-banner-text">
+                <strong style="color:#14532d;">Pembayaran Dikonfirmasi</strong>
+                <span style="color:#15803d;">Terima kasih! Pesanan Anda sedang diproses.</span>
+            </div>
+        </div>
+        <% } else { %>
         <div class="status-banner">
             <div class="status-banner-icon"><i class="fa-solid fa-clock"></i></div>
             <div class="status-banner-text">
@@ -167,6 +178,7 @@
                 <span>Silakan transfer ke nomor Virtual Account BCA di bawah ini.</span>
             </div>
         </div>
+        <% } %>
 
         <!-- BCA Virtual Account -->
         <div class="payment-card">
@@ -193,6 +205,26 @@
                     </button>
                 </div>
 
+                <% if (invoice) { %>
+                <div class="detail-row">
+                    <span class="label">No. Invoice</span>
+                    <span class="value" style="font-family:monospace;font-size:0.85rem;"><%= invoice.Invoice_No %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Jatuh Tempo</span>
+                    <span class="value"><%= new Date(invoice.Due_Date).toLocaleDateString('id-ID', {day:'2-digit',month:'long',year:'numeric'}) %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Status Invoice</span>
+                    <span class="value">
+                        <% if (invoice.Payment_Status === 'Paid') { %>
+                            <span style="color:#16a34a;font-weight:700;"><i class="fa-solid fa-circle-check me-1"></i>Lunas</span>
+                        <% } else { %>
+                            <span style="color:#d97706;font-weight:700;"><i class="fa-solid fa-clock me-1"></i>Belum Dibayar</span>
+                        <% } %>
+                    </span>
+                </div>
+                <% } %>
                 <div class="detail-row">
                     <span class="label">No. Pesanan</span>
                     <span class="value">REQ-<%= order.Order_ID %></span>
@@ -234,6 +266,21 @@
                 </ol>
             </div>
         </div>
+
+        <!-- Confirm Payment Button -->
+        <% if (!isPaid) { %>
+        <form action="/dashboard/payment/<%= order.Order_ID %>/confirm" method="POST" style="margin-bottom:1.25rem;">
+            <button type="submit"
+                onclick="return confirm('Konfirmasi bahwa Anda telah melakukan transfer ke BCA Virtual Account?\n\nNomor VA: 1220 8134 7629 5401\nNominal: <%= totalFormatted %>')"
+                style="width:100%;padding:1rem;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.6rem;box-shadow:0 4px 16px rgba(22,163,74,0.35);transition:all 0.2s;">
+                <i class="fa-solid fa-circle-check"></i> Konfirmasi Pembayaran
+            </button>
+        </form>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem;">
+            <i class="fa-solid fa-triangle-exclamation me-1" style="color:#d97706;"></i>
+            Tombol ini mensimulasikan konfirmasi pembayaran untuk keperluan demo.
+        </p>
+        <% } %>
 
         <!-- Contact -->
         <div style="text-align:center;padding:1.25rem;color:var(--muted);font-size:0.82rem;">

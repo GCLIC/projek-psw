@@ -534,7 +534,26 @@ app.get('/dashboard/payment/:id', async (req, res) => {
         const total = details.reduce((sum, d) => sum + (d.Quantity * d.Selling_Price), 0);
         const totalFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(total);
 
-        res.render('dashboard-payment', { user: users[0], order: orders[0], details, totalFormatted });
+        const [invoices] = await pool.query('SELECT * FROM invoice WHERE Order_ID = ?', [req.params.id]);
+        const invoice = invoices[0] || null;
+
+        res.render('dashboard-payment', { user: users[0], order: orders[0], details, totalFormatted, invoice, paid: req.query.paid });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Database Error");
+    }
+});
+
+// --- ROUTE: Confirm Payment ---
+app.post('/dashboard/payment/:id/confirm', async (req, res) => {
+    if (!req.session.userEmail) return res.redirect('/portal');
+    try {
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
+        const [orders] = await pool.query('SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ?', [req.params.id, users[0].Cust_ID]);
+        if (!orders.length) return res.redirect('/dashboard/history');
+
+        await pool.query("UPDATE invoice SET Payment_Status = 'Paid' WHERE Order_ID = ?", [req.params.id]);
+        res.redirect(`/dashboard/payment/${req.params.id}?paid=1`);
     } catch (err) {
         console.error(err);
         res.status(500).send("Database Error");
@@ -828,7 +847,15 @@ app.post('/admin/requests/:id/price', async (req, res) => {
             [orderId]
         );
 
-        // 3. Simpan permanen perubahan di kedua tabel
+        // 3. Auto-generate invoice
+        const invoiceNo = `INV-${new Date().getFullYear()}-${String(orderId).padStart(5, '0')}`;
+        const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+        await connection.query(
+            'INSERT INTO invoice (Invoice_No, Due_Date, Payment_Status, Order_ID) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Invoice_No=Invoice_No',
+            [invoiceNo, dueDate, 'Pending', orderId]
+        );
+
+        // 4. Simpan permanen perubahan
         await connection.commit();
         res.redirect('/admin/requests'); 
     } catch (err) {
