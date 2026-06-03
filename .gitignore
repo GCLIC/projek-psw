@@ -6,3 +6,4 @@ public/images/*.jpg
 public/images/*.png
 public/images/*.webp
 !public/images/Logo PT trimas mitra perkasa.jpeg
+.claude/
