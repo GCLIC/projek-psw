@@ -151,6 +151,14 @@ app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
 
+// --- Global guard: logged-in customers cannot access any /admin/* route ---
+app.use('/admin', (req, res, next) => {
+    if (req.session.userEmail && !req.session.adminId) {
+        return res.redirect('/dashboard');
+    }
+    next();
+});
+
 // --- ROUTE: Home Page ---
 app.get('/', async (req, res) => {
     try {
@@ -706,7 +714,10 @@ app.get('/logout', (req, res) => {
 });
 
 // --- ROUTE: Admin Login Page ---
+// Block customers from accessing admin login
 app.get('/admin-login', (req, res) => {
+    if (req.session.userEmail) return res.redirect('/dashboard');
+    if (req.session.adminId) return res.redirect('/admin/dashboard');
     res.render('admin-login');
 });
 
