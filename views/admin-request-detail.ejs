@@ -221,9 +221,16 @@
             <!-- Save bar -->
             <div class="save-bar">
                 <% if (order.Order_Status === 'Pending Review') { %>
-                    <button type="submit" class="btn-accent" style="font-size:0.95rem;padding:0.7rem 2rem;">
-                        <i class="fa-solid fa-check-double"></i> Simpan Harga &amp; Selesaikan
-                    </button>
+                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                        <button type="submit" name="action" value="save" class="btn-ghost" style="font-size:0.9rem;padding:0.65rem 1.5rem;">
+                            <i class="fa-solid fa-floppy-disk"></i> Simpan Harga
+                        </button>
+                        <button type="submit" name="action" value="finalize"
+                            class="btn-accent" style="font-size:0.9rem;padding:0.65rem 1.75rem;"
+                            onclick="return confirm('Tandai pesanan ini sebagai Selesai?\n\nKonfirmasi ini akan mengirimkan penawaran final ke pelanggan.')">
+                            <i class="fa-solid fa-circle-check"></i> Selesaikan &amp; Kirim Penawaran
+                        </button>
+                    </div>
                 <% } else { %>
                     <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.875rem;font-weight:600;color:#16a34a;">
                         <i class="fa-solid fa-circle-check fa-lg"></i> Penawaran telah selesai dan dikirimkan ke pelanggan.

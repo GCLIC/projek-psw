@@ -841,21 +841,23 @@ app.post('/admin/requests/:id/price', async (req, res) => {
             );
         }
 
-        // 2. Update status tabel utama menjadi 'Selesai'
-        await connection.query(
-            "UPDATE sales_order SET Order_Status = 'Selesai' WHERE Order_ID = ?",
-            [orderId]
-        );
+        // 2. Only mark as Selesai and generate invoice if admin clicked "Selesaikan"
+        if (req.body.action === 'finalize') {
+            await connection.query(
+                "UPDATE sales_order SET Order_Status = 'Selesai' WHERE Order_ID = ?",
+                [orderId]
+            );
 
-        // 3. Auto-generate invoice
-        const invoiceNo = `INV-${new Date().getFullYear()}-${String(orderId).padStart(5, '0')}`;
-        const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-        await connection.query(
-            'INSERT INTO invoice (Invoice_No, Due_Date, Payment_Status, Order_ID) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Invoice_No=Invoice_No',
-            [invoiceNo, dueDate, 'Pending', orderId]
-        );
+            // Auto-generate invoice
+            const invoiceNo = `INV-${new Date().getFullYear()}-${String(orderId).padStart(5, '0')}`;
+            const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            await connection.query(
+                'INSERT INTO invoice (Invoice_No, Due_Date, Payment_Status, Order_ID) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Invoice_No=Invoice_No',
+                [invoiceNo, dueDate, 'Pending', orderId]
+            );
+        }
 
-        // 4. Simpan permanen perubahan
+        // 3. Simpan permanen perubahan
         await connection.commit();
         res.redirect('/admin/requests'); 
     } catch (err) {
