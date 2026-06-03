@@ -196,9 +196,15 @@
                 <div style="font-size:1rem;font-weight:800;color:#92400e;margin-bottom:0.4rem;">
                     <i class="fa-solid fa-file-invoice-dollar me-2"></i>Penawaran Harga Diterima
                 </div>
-                <p style="font-size:0.85rem;color:#b45309;margin-bottom:1.25rem;">
+                <p style="font-size:0.85rem;color:#b45309;margin-bottom:0.75rem;">
                     Tim sales kami telah memberikan penawaran harga di atas. Silakan tinjau dan berikan keputusan Anda.
                 </p>
+                <% if (order.Quote_Valid_Until) { %>
+                <div style="display:inline-flex;align-items:center;gap:0.4rem;background:#fff;border:1px solid #fcd34d;border-radius:8px;padding:0.35rem 0.85rem;font-size:0.82rem;color:#92400e;font-weight:600;margin-bottom:1.25rem;">
+                    <i class="fa-solid fa-clock"></i>
+                    Penawaran berlaku hingga: <%= new Date(order.Quote_Valid_Until).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                </div>
+                <% } %>
                 <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
                     <form action="/dashboard/history/<%= order.Order_ID %>/agree" method="POST">
                         <button type="submit"
