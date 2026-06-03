@@ -718,7 +718,7 @@ const ADMIN_PATH = process.env.ADMIN_PATH || 'admin-login';
 app.get(`/${ADMIN_PATH}`, (req, res) => {
     if (req.session.userEmail) return res.redirect('/dashboard');
     if (req.session.adminId) return res.redirect('/admin/dashboard');
-    res.render('admin-login');
+    res.render('admin-login', { adminPath: ADMIN_PATH });
 });
 // Old /admin-login URL returns 404 — not found, no hint it exists
 app.get('/admin-login', (req, res) => res.status(404).send('Not Found'));
