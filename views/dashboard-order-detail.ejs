@@ -135,6 +135,7 @@
                     let badgeClass = 'badge-pending';
                     if (order.Order_Status === 'Selesai') badgeClass = 'badge-done';
                     if (order.Order_Status === 'Dibatalkan') badgeClass = 'badge-danger';
+                    if (order.Order_Status === 'Penawaran Dikirim') badgeClass = 'badge-info';
                 %>
                 <span class="badge-pill <%= badgeClass %>">
                     <i class="fa-solid fa-circle" style="font-size:0.38rem;"></i>
@@ -189,6 +190,31 @@
             <div style="text-align:center;padding:1rem;color:var(--muted);font-size:0.82rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
                 <i class="fa-solid fa-hourglass-half me-2" style="color:#d97706;"></i>
                 Tim sales kami sedang memproses permintaan harga Anda. Estimasi respons <strong>1×24 jam</strong>.
+            </div>
+        <% } else if (order.Order_Status === 'Penawaran Dikirim') { %>
+            <div style="background:linear-gradient(135deg,#fffbeb,#fef9c3);border:1.5px solid #fcd34d;border-radius:14px;padding:1.5rem;text-align:center;">
+                <div style="font-size:1rem;font-weight:800;color:#92400e;margin-bottom:0.4rem;">
+                    <i class="fa-solid fa-file-invoice-dollar me-2"></i>Penawaran Harga Diterima
+                </div>
+                <p style="font-size:0.85rem;color:#b45309;margin-bottom:1.25rem;">
+                    Tim sales kami telah memberikan penawaran harga di atas. Silakan tinjau dan berikan keputusan Anda.
+                </p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <form action="/dashboard/history/<%= order.Order_ID %>/agree" method="POST">
+                        <button type="submit"
+                            onclick="return confirm('Anda menyetujui penawaran harga ini?\n\nTotal: <%= totalFormatted %>\n\nSetelah disetujui, Anda akan diarahkan ke halaman pembayaran.')"
+                            style="padding:0.75rem 2rem;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;box-shadow:0 4px 12px rgba(22,163,74,0.3);">
+                            <i class="fa-solid fa-circle-check"></i> Setuju &amp; Lanjutkan
+                        </button>
+                    </form>
+                    <form action="/dashboard/history/<%= order.Order_ID %>/decline" method="POST">
+                        <button type="submit"
+                            onclick="return confirm('Anda menolak penawaran harga ini?\n\nPesanan akan dibatalkan dan Anda perlu membuat request baru.')"
+                            style="padding:0.75rem 1.5rem;background:#fff;color:#dc2626;border:1.5px solid #fca5a5;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;">
+                            <i class="fa-solid fa-circle-xmark"></i> Tolak Penawaran
+                        </button>
+                    </form>
+                </div>
             </div>
         <% } %>
 

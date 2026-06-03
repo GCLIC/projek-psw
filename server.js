@@ -369,6 +369,7 @@ app.get('/dashboard/history', async (req, res) => {
             let badgeColor = 'warning';
             if (row.status === 'Selesai') badgeColor = 'success';
             if (row.status === 'Dibatalkan') badgeColor = 'danger';
+            if (row.status === 'Penawaran Dikirim') badgeColor = 'info';
 
             const formattedTotal = row.raw_total
                 ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(row.raw_total)
@@ -538,6 +539,53 @@ app.get('/dashboard/payment/:id', async (req, res) => {
         const invoice = invoices[0] || null;
 
         res.render('dashboard-payment', { user: users[0], order: orders[0], details, totalFormatted, invoice, paid: req.query.paid });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Database Error");
+    }
+});
+
+// --- ROUTE: Customer Agrees to Quote ---
+app.post('/dashboard/history/:id/agree', async (req, res) => {
+    if (!req.session.userEmail) return res.redirect('/portal');
+    try {
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
+        const [orders] = await pool.query(
+            "SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ? AND Order_Status = 'Penawaran Dikirim'",
+            [req.params.id, users[0].Cust_ID]
+        );
+        if (!orders.length) return res.redirect('/dashboard/history');
+
+        await pool.query("UPDATE sales_order SET Order_Status = 'Selesai' WHERE Order_ID = ?", [req.params.id]);
+
+        // Generate invoice
+        const invoiceNo = `INV-${new Date().getFullYear()}-${String(req.params.id).padStart(5, '0')}`;
+        const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        await pool.query(
+            'INSERT INTO invoice (Invoice_No, Due_Date, Payment_Status, Order_ID) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Invoice_No=Invoice_No',
+            [invoiceNo, dueDate, 'Pending', req.params.id]
+        );
+
+        res.redirect(`/dashboard/payment/${req.params.id}`);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Database Error");
+    }
+});
+
+// --- ROUTE: Customer Declines Quote ---
+app.post('/dashboard/history/:id/decline', async (req, res) => {
+    if (!req.session.userEmail) return res.redirect('/portal');
+    try {
+        const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
+        const [orders] = await pool.query(
+            "SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ? AND Order_Status = 'Penawaran Dikirim'",
+            [req.params.id, users[0].Cust_ID]
+        );
+        if (!orders.length) return res.redirect('/dashboard/history');
+
+        await pool.query("UPDATE sales_order SET Order_Status = 'Dibatalkan' WHERE Order_ID = ?", [req.params.id]);
+        res.redirect('/dashboard/history');
     } catch (err) {
         console.error(err);
         res.status(500).send("Database Error");
@@ -841,19 +889,11 @@ app.post('/admin/requests/:id/price', async (req, res) => {
             );
         }
 
-        // 2. Only mark as Selesai and generate invoice if admin clicked "Selesaikan"
+        // 2. If admin clicks "Kirim Penawaran", set status to awaiting customer approval
         if (req.body.action === 'finalize') {
             await connection.query(
-                "UPDATE sales_order SET Order_Status = 'Selesai' WHERE Order_ID = ?",
+                "UPDATE sales_order SET Order_Status = 'Penawaran Dikirim' WHERE Order_ID = ?",
                 [orderId]
-            );
-
-            // Auto-generate invoice
-            const invoiceNo = `INV-${new Date().getFullYear()}-${String(orderId).padStart(5, '0')}`;
-            const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-            await connection.query(
-                'INSERT INTO invoice (Invoice_No, Due_Date, Payment_Status, Order_ID) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Invoice_No=Invoice_No',
-                [invoiceNo, dueDate, 'Pending', orderId]
             );
         }
 

@@ -227,13 +227,17 @@
                         </button>
                         <button type="submit" name="action" value="finalize"
                             class="btn-accent" style="font-size:0.9rem;padding:0.65rem 1.75rem;"
-                            onclick="return confirm('Tandai pesanan ini sebagai Selesai?\n\nKonfirmasi ini akan mengirimkan penawaran final ke pelanggan.')">
-                            <i class="fa-solid fa-circle-check"></i> Selesaikan &amp; Kirim Penawaran
+                            onclick="return confirm('Kirim penawaran ini ke pelanggan?\n\nPelanggan akan diminta untuk menyetujui atau menolak harga yang diberikan.')">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim Penawaran ke Pelanggan
                         </button>
+                    </div>
+                <% } else if (order.Order_Status === 'Penawaran Dikirim') { %>
+                    <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.875rem;font-weight:600;color:#d97706;">
+                        <i class="fa-solid fa-clock fa-lg"></i> Penawaran telah dikirim — menunggu persetujuan pelanggan.
                     </div>
                 <% } else { %>
                     <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.875rem;font-weight:600;color:#16a34a;">
-                        <i class="fa-solid fa-circle-check fa-lg"></i> Penawaran telah selesai dan dikirimkan ke pelanggan.
+                        <i class="fa-solid fa-circle-check fa-lg"></i> Pelanggan telah menyetujui penawaran.
                     </div>
                 <% } %>
                 <div class="total-box" style="padding:0.85rem 1.5rem;">
