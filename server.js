@@ -713,16 +713,18 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// --- ROUTE: Admin Login Page ---
-// Block customers from accessing admin login
-app.get('/admin-login', (req, res) => {
+// --- ROUTE: Admin Login Page (obscured URL) ---
+const ADMIN_PATH = process.env.ADMIN_PATH || 'admin-login';
+app.get(`/${ADMIN_PATH}`, (req, res) => {
     if (req.session.userEmail) return res.redirect('/dashboard');
     if (req.session.adminId) return res.redirect('/admin/dashboard');
     res.render('admin-login');
 });
+// Old /admin-login URL returns 404 — not found, no hint it exists
+app.get('/admin-login', (req, res) => res.status(404).send('Not Found'));
 
 // --- ROUTE: Process Admin Login ---
-app.post('/admin-login', async (req, res) => {
+app.post(`/${ADMIN_PATH}`, async (req, res) => {
     const { username, password } = req.body;
 
     try {
@@ -755,7 +757,7 @@ app.post('/admin-login', async (req, res) => {
 app.get('/admin/dashboard', async (req, res) => {
     // PROTEKSI: Tendang kembali ke halaman login jika bukan admin
     if (!req.session.adminId) {
-        return res.redirect('/admin-login');
+        return res.redirect(`/${ADMIN_PATH}`);
     }
 
     try {
@@ -788,18 +790,18 @@ app.get('/admin/dashboard', async (req, res) => {
 // --- ROUTE: Admin Logout ---
 app.get('/admin-logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/admin-login');
+    res.redirect(`/${ADMIN_PATH}`);
 });
 
 // --- ROUTE: Tampilkan Halaman Tambah Produk ---
 app.get('/admin/products/add', (req, res) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     res.render('admin-product-add', { adminName: req.session.adminName });
 });
 
 // --- ROUTE: Proses Simpan Produk Baru (Multi-Table Transaction) ---
 app.post('/admin/products/add', (req, res, next) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     next();
 }, upload.single('product_image'), async (req, res) => {
     // 1. Ambil data utama
@@ -865,7 +867,7 @@ app.post('/admin/products/add', (req, res, next) => {
 
 // --- ROUTE: Halaman Permintaan Penawaran (Admin) ---
 app.get('/admin/requests', async (req, res) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
 
     // 1. Tangkap status filter dari URL (misal: ?status=pending)
     const filterStatus = req.query.status;
@@ -929,7 +931,7 @@ app.get('/admin/requests', async (req, res) => {
 
 // --- ROUTE: Halaman Detail Request & Beri Harga (Admin) ---
 app.get('/admin/requests/:id', async (req, res) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     const orderId = req.params.id;
 
     try {
@@ -964,7 +966,7 @@ app.get('/admin/requests/:id', async (req, res) => {
 });
 // --- ROUTE: Proses Simpan Harga & Selesaikan Pesanan ---
 app.post('/admin/requests/:id/price', async (req, res) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     
     const orderId = req.params.id;
     // Menangkap array product_id dan array selling_price dari form HTML
@@ -1013,7 +1015,7 @@ app.post('/admin/requests/:id/price', async (req, res) => {
 // --- ROUTE: Halaman Katalog Produk (Admin) ---
 app.get('/admin/products', async (req, res) => {
     // Proteksi halaman admin
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
 
     try {
         // Ambil semua produk dari database, urutkan dari yang terbaru ditambahkan
@@ -1031,7 +1033,7 @@ app.get('/admin/products', async (req, res) => {
 
 // --- ROUTE: Hapus Produk (Admin) ---
 app.post('/admin/products/delete/:id', async (req, res) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     const productId = req.params.id;
 
     try {
@@ -1058,7 +1060,7 @@ app.post('/admin/products/delete/:id', async (req, res) => {
 
 // --- ROUTE: Halaman Edit Produk (Admin) ---
 app.get('/admin/products/edit/:id', async (req, res) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     const productId = req.params.id;
 
     try {
@@ -1085,7 +1087,7 @@ app.get('/admin/products/edit/:id', async (req, res) => {
 
 // --- ROUTE: Proses Simpan Edit Produk ---
 app.post('/admin/products/edit/:id', (req, res, next) => {
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
     next();
 }, upload.single('product_image'), async (req, res) => {
     const productId = req.params.id;
@@ -1139,7 +1141,7 @@ app.post('/admin/products/edit/:id', (req, res, next) => {
 // --- ROUTE: Halaman Daftar Pelanggan (Admin) ---
 app.get('/admin/customers', async (req, res) => {
     // Proteksi keamanan admin
-    if (!req.session.adminId) return res.redirect('/admin-login');
+    if (!req.session.adminId) return res.redirect(`/${ADMIN_PATH}`);
 
     try {
         // Query master: Mengambil data pelanggan, menggabungkan nomor telepon (jika ada lebih dari 1),
