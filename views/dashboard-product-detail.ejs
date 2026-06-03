@@ -195,7 +195,7 @@
             <div class="img-footer">
                 <% if (product.Unit_Price && product.Unit_Price > 0) { %>
                     <div class="product-price">HARGA ACUAN</div>
-                    <div style="font-size:1.35rem;font-weight:800;color:var(--primary);margin-bottom:0.25rem;">
+                    <div style="font-size:1.35rem;font-weight:800;color:var(--text-light);margin-bottom:0.25rem;">
                         <%= new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR',maximumFractionDigits:0}).format(product.Unit_Price) %>
                     </div>
                     <div class="price-note">Harga acuan per unit. Harga final ditentukan setelah RFQ diproses.</div>
