@@ -999,11 +999,11 @@ app.post('/admin/requests/:id/price', async (req, res) => {
             );
         }
 
-        // 2. Save quote valid until date (both save and finalize)
+        // 2. Save quote valid until date and admin notes (both save and finalize)
         const quoteValidUntil = req.body.quote_valid_until || null;
         await connection.query(
-            "UPDATE sales_order SET Quote_Valid_Until = ? WHERE Order_ID = ?",
-            [quoteValidUntil, orderId]
+            "UPDATE sales_order SET Quote_Valid_Until = ?, Admin_ID = ? WHERE Order_ID = ?",
+            [quoteValidUntil, req.session.adminId, orderId]
         );
 
         // 3. If admin clicks "Kirim Penawaran", set status to awaiting customer approval
