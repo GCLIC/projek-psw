@@ -50,9 +50,15 @@ const upload = multer({
     }
 });
 
-const brevoClient = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
+let brevoClient;
+try {
+    brevoClient = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
+} catch (e) {
+    console.error('Brevo init failed:', e.message);
+}
 
 async function sendOTPEmail(toEmail, otpCode) {
+    if (!brevoClient) throw new Error('Brevo not initialised — check BREVO_API_KEY');
     return brevoClient.transactionalEmails.sendTransacEmail({
         sender: { name: 'PT Trimas Mitra Perkasa', email: process.env.MAIL_USER },
         to: [{ email: toEmail }],
@@ -70,7 +76,8 @@ async function sendOTPEmail(toEmail, otpCode) {
     });
 }
 
-async function sendPaymentConfirmationEmail(toEmail, { companyName, invoiceNo, orderId, totalFormatted, dueDate, items }) {
+async function sendPaymentConfirmationEmail(toEmail, { companyName, invoiceNo, orderId, totalFormatted, items }) {
+    if (!brevoClient) throw new Error('Brevo not initialised — check BREVO_API_KEY');
     const itemRows = items.map(i => `
         <tr>
             <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;color:#374151;">${i.Product_Name}</td>
