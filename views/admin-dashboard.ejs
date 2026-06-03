@@ -74,61 +74,54 @@
         <!-- Stat Cards -->
         <div class="row g-3 mb-4">
             <div class="col-sm-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-card-bar orange"></div>
-                    <div class="d-flex justify-content-between align-items-start" style="padding-left:0.75rem;">
+                <div class="stat-card card-orange">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="stat-label">Pending RFQ</div>
-                            <div class="stat-value" style="color:<%= pendingOrders > 0 ? 'var(--accent)' : 'var(--primary)' %>;"><%= pendingOrders %></div>
-                            <div class="stat-note">
-                                <% if (pendingOrders > 0) { %>
-                                    <span style="color:var(--accent);font-weight:600;">Perlu ditindaklanjuti</span>
-                                <% } else { %>
-                                    Tidak ada antrian
-                                <% } %>
-                            </div>
+                            <div class="stat-value"><%= pendingOrders %></div>
+                            <div class="stat-note"><%= pendingOrders > 0 ? 'Perlu ditindaklanjuti' : 'Tidak ada antrian' %></div>
                         </div>
-                        <div class="stat-icon" style="background:#fff7ed;color:#d97706;"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
                     </div>
                 </div>
             </div>
             <div class="col-sm-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-card-bar blue"></div>
-                    <div class="d-flex justify-content-between align-items-start" style="padding-left:0.75rem;">
+                <div class="stat-card card-blue">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="stat-label">Total Produk</div>
                             <div class="stat-value"><%= totalProducts %></div>
                             <div class="stat-note">SKU dalam katalog</div>
                         </div>
-                        <div class="stat-icon" style="background:#dbeafe;color:var(--steel);"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        <div class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
                     </div>
                 </div>
             </div>
             <div class="col-sm-6 col-lg-3">
-                <div class="stat-card">
-                    <div class="stat-card-bar green"></div>
-                    <div class="d-flex justify-content-between align-items-start" style="padding-left:0.75rem;">
+                <div class="stat-card card-green">
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <div class="stat-label">Pelanggan</div>
                             <div class="stat-value"><%= typeof totalCustomers !== 'undefined' ? totalCustomers : '—' %></div>
                             <div class="stat-note">Mitra terdaftar</div>
                         </div>
-                        <div class="stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                     </div>
                 </div>
             </div>
             <div class="col-sm-6 col-lg-3">
                 <a href="/admin/requests?status=pending" style="text-decoration:none;">
-                    <div class="stat-card" style="cursor:pointer;border-style:<%= pendingOrders > 0 ? 'solid' : 'dashed' %>;border-color:<%= pendingOrders > 0 ? '#fde68a' : 'var(--border)' %>;">
-                        <div class="stat-card-bar" style="background:<%= pendingOrders > 0 ? 'var(--accent)' : '#94a3b8' %>;"></div>
-                        <div style="padding-left:0.75rem;">
-                            <div class="stat-label">Aksi Cepat</div>
-                            <div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.4rem;">
-                                <span style="font-size:0.82rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:0.35rem;">
-                                    <i class="fa-solid fa-arrow-right"></i> Proses RFQ
-                                </span>
+                    <div class="stat-card card-purple" style="cursor:pointer;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="stat-label">Aksi Cepat</div>
+                                <div style="margin-top:0.5rem;">
+                                    <span style="font-size:0.85rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.35rem;">
+                                        <i class="fa-solid fa-arrow-right"></i> Proses RFQ
+                                    </span>
+                                </div>
                             </div>
+                            <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
                         </div>
                     </div>
                 </a>
