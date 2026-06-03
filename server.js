@@ -70,6 +70,74 @@ async function sendOTPEmail(toEmail, otpCode) {
     });
 }
 
+async function sendPaymentConfirmationEmail(toEmail, { companyName, invoiceNo, orderId, totalFormatted, dueDate, items }) {
+    const itemRows = items.map(i => `
+        <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;color:#374151;">${i.Product_Name}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;color:#374151;">${i.Quantity}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:right;color:#374151;">${new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR'}).format(i.Selling_Price)}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:right;font-weight:600;color:#1e3a5f;">${new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR'}).format(i.Quantity * i.Selling_Price)}</td>
+        </tr>
+    `).join('');
+
+    return brevoClient.transactionalEmails.sendTransacEmail({
+        sender: { name: 'PT Trimas Mitra Perkasa', email: process.env.MAIL_USER },
+        to: [{ email: toEmail }],
+        subject: `Konfirmasi Pembayaran — ${invoiceNo}`,
+        htmlContent: `
+            <div style="font-family:sans-serif;max-width:600px;margin:auto;padding:0;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+                <div style="background:linear-gradient(135deg,#0f2d52,#163d6e);padding:28px 32px;">
+                    <h2 style="color:#fff;margin:0;font-size:20px;">PT Trimas Mitra Perkasa</h2>
+                    <p style="color:rgba(255,255,255,0.6);margin:4px 0 0;font-size:13px;">Konfirmasi Pembayaran Diterima</p>
+                </div>
+                <div style="padding:28px 32px;background:#fff;">
+                    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+                        <span style="color:#16a34a;font-size:20px;">✓</span>
+                        <div>
+                            <strong style="color:#14532d;">Pembayaran Dikonfirmasi</strong><br>
+                            <span style="font-size:13px;color:#15803d;">Terima kasih, ${companyName}. Pembayaran Anda telah kami terima.</span>
+                        </div>
+                    </div>
+
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                        <tr><td style="padding:6px 0;color:#64748b;font-size:13px;">No. Invoice</td><td style="padding:6px 0;font-weight:700;color:#1e3a5f;font-family:monospace;">${invoiceNo}</td></tr>
+                        <tr><td style="padding:6px 0;color:#64748b;font-size:13px;">No. Pesanan</td><td style="padding:6px 0;font-weight:600;">REQ-${orderId}</td></tr>
+                        <tr><td style="padding:6px 0;color:#64748b;font-size:13px;">Perusahaan</td><td style="padding:6px 0;font-weight:600;">${companyName}</td></tr>
+                        <tr><td style="padding:6px 0;color:#64748b;font-size:13px;">Tanggal Bayar</td><td style="padding:6px 0;font-weight:600;">${new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}</td></tr>
+                    </table>
+
+                    <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:20px;">
+                        <thead>
+                            <tr style="background:#f8fafc;">
+                                <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:600;border-bottom:1px solid #e5e7eb;">PRODUK</th>
+                                <th style="padding:10px 12px;text-align:center;font-size:12px;color:#64748b;font-weight:600;border-bottom:1px solid #e5e7eb;">QTY</th>
+                                <th style="padding:10px 12px;text-align:right;font-size:12px;color:#64748b;font-weight:600;border-bottom:1px solid #e5e7eb;">HARGA SATUAN</th>
+                                <th style="padding:10px 12px;text-align:right;font-size:12px;color:#64748b;font-weight:600;border-bottom:1px solid #e5e7eb;">SUBTOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemRows}</tbody>
+                        <tfoot>
+                            <tr style="background:#0f2d52;">
+                                <td colspan="3" style="padding:12px;color:#fff;font-weight:700;font-size:14px;">Total Pembayaran</td>
+                                <td style="padding:12px;text-align:right;color:#f9a05a;font-weight:800;font-size:16px;">${totalFormatted}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <p style="color:#64748b;font-size:13px;line-height:1.6;">
+                        Tim kami akan segera memproses pesanan Anda. Jika ada pertanyaan, hubungi kami melalui
+                        <a href="https://wa.me/6281288821882" style="color:#16a34a;font-weight:600;">WhatsApp</a> atau email
+                        <a href="mailto:sales@trimasmitraperkasa.com" style="color:#2a7ab8;">sales@trimasmitraperkasa.com</a>.
+                    </p>
+                </div>
+                <div style="background:#f8fafc;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+                    <p style="color:#94a3b8;font-size:12px;margin:0;">© ${new Date().getFullYear()} PT Trimas Mitra Perkasa · Batam, Indonesia</p>
+                </div>
+            </div>
+        `
+    });
+}
+
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 3306,
@@ -597,10 +665,32 @@ app.post('/dashboard/payment/:id/confirm', async (req, res) => {
     if (!req.session.userEmail) return res.redirect('/portal');
     try {
         const [users] = await pool.query('SELECT * FROM customer WHERE Email = ?', [req.session.userEmail]);
-        const [orders] = await pool.query('SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ?', [req.params.id, users[0].Cust_ID]);
+        const user = users[0];
+        const [orders] = await pool.query('SELECT * FROM sales_order WHERE Order_ID = ? AND Cust_ID = ?', [req.params.id, user.Cust_ID]);
         if (!orders.length) return res.redirect('/dashboard/history');
 
         await pool.query("UPDATE invoice SET Payment_Status = 'Paid' WHERE Order_ID = ?", [req.params.id]);
+
+        // Fetch invoice + order items for email
+        const [invoices] = await pool.query('SELECT * FROM invoice WHERE Order_ID = ?', [req.params.id]);
+        const [details] = await pool.query(`
+            SELECT od.*, p.Product_Name
+            FROM order_detail od
+            JOIN product p ON od.Product_ID = p.Product_ID
+            WHERE od.Order_ID = ?
+        `, [req.params.id]);
+        const total = details.reduce((sum, d) => sum + (d.Quantity * d.Selling_Price), 0);
+        const totalFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(total);
+
+        // Fire email — don't block the redirect
+        sendPaymentConfirmationEmail(user.Email, {
+            companyName: user.Company_Name || user.F_name,
+            invoiceNo: invoices[0]?.Invoice_No || `INV-${new Date().getFullYear()}-${String(req.params.id).padStart(5,'0')}`,
+            orderId: req.params.id,
+            totalFormatted,
+            items: details
+        }).catch(err => console.error('Invoice email error:', err.message));
+
         res.redirect(`/dashboard/payment/${req.params.id}?paid=1`);
     } catch (err) {
         console.error(err);
