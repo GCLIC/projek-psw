@@ -222,6 +222,13 @@
             <div class="save-bar">
                 <% if (order.Order_Status === 'Pending Review') { %>
                     <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                        <div style="display:flex;flex-direction:column;gap:0.2rem;">
+                            <label style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Berlaku Hingga</label>
+                            <input type="date" name="quote_valid_until" required
+                                style="border:1.5px solid var(--border);border-radius:8px;padding:0.55rem 0.85rem;font-size:0.875rem;color:var(--text);background:#fff;outline:none;"
+                                min="<%= new Date().toISOString().split('T')[0] %>"
+                                value="<%= order.Quote_Valid_Until ? new Date(order.Quote_Valid_Until).toISOString().split('T')[0] : '' %>">
+                        </div>
                         <button type="submit" name="action" value="save" class="btn-ghost" style="font-size:0.9rem;padding:0.65rem 1.5rem;">
                             <i class="fa-solid fa-floppy-disk"></i> Simpan Harga
                         </button>

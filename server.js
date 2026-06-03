@@ -999,7 +999,14 @@ app.post('/admin/requests/:id/price', async (req, res) => {
             );
         }
 
-        // 2. If admin clicks "Kirim Penawaran", set status to awaiting customer approval
+        // 2. Save quote valid until date (both save and finalize)
+        const quoteValidUntil = req.body.quote_valid_until || null;
+        await connection.query(
+            "UPDATE sales_order SET Quote_Valid_Until = ? WHERE Order_ID = ?",
+            [quoteValidUntil, orderId]
+        );
+
+        // 3. If admin clicks "Kirim Penawaran", set status to awaiting customer approval
         if (req.body.action === 'finalize') {
             await connection.query(
                 "UPDATE sales_order SET Order_Status = 'Penawaran Dikirim' WHERE Order_ID = ?",
