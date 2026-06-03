@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm install *)",
       "Bash(findstr /I \"trimas\" server.js)",
-      "Bash(grep -v \"//\\\\|console\\\\|Error\\\\|Warning\")"
+      "Bash(grep -v \"//\\\\|console\\\\|Error\\\\|Warning\")",
+      "Bash(dir \"D:\\\\Semester 2\\\\Pemrograman Web\\\\Projek PSW\\\\public\\\\images\")"
     ]
   }
 }
