@@ -95,6 +95,10 @@
     </a>
     <a href="/dashboard/history" class="sidebar-link"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Transaksi</a>
     <div class="sidebar-footer">
+        <div class="theme-toggle mb-3" onclick="toggleTheme()">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+            <span id="themeLabel">Mode Gelap</span>
+        </div>
         <a href="/logout" class="sidebar-link danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </div>
 </aside>
@@ -250,12 +254,18 @@
         if (saved) document.documentElement.setAttribute('data-theme', saved);
         else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
             document.documentElement.setAttribute('data-theme', 'dark');
+        updateThemeLabel();
     })();
     function toggleTheme() {
         const html = document.documentElement;
         const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
+        updateThemeLabel();
+    }
+    function updateThemeLabel() {
+        const label = document.getElementById('themeLabel');
+        if (label) label.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Mode Terang' : 'Mode Gelap';
     }
 </script>
 </body>
