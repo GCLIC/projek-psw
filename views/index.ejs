@@ -175,12 +175,6 @@
         .btn-dl { display: block; width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-weight: 700; padding: 0.85rem 1rem; font-size: 0.95rem; text-align: center; text-decoration: none; transition: all 0.2s; }
         .btn-dl:hover { background: var(--accent-dark); color: #fff; transform: translateY(-1px); }
 
-        /* Modal */
-        .modal-content { background: var(--surface); }
-        .modal .form-control, .modal .form-select { background: var(--surface); border-color: var(--border); color: var(--text); }
-        .modal .form-control:focus, .modal .form-select:focus { background: var(--surface); color: var(--text); }
-        .modal .form-control::placeholder { color: var(--muted); }
-
         /* Footer */
         footer { background: #060e1a; color: #64748b; padding: 4rem 0 1.75rem; }
         .footer-link { color: #64748b; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
@@ -251,9 +245,9 @@
                     <a href="#products" class="btn-hero-primary">
                         Lihat Produk Kami <i class="fa-solid fa-arrow-right"></i>
                     </a>
-                    <button type="button" class="btn-hero-outline" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                    <a href="/portal" class="btn-hero-outline">
                         <i class="fa-solid fa-file-invoice"></i> Minta Penawaran
-                    </button>
+                    </a>
                 </div>
                 <div class="hero-stats">
                     <div class="hero-stat">
@@ -493,67 +487,6 @@
         </div>
     </div>
 </footer>
-
-<!-- MODAL PENAWARAN -->
-<div class="modal fade" id="quoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
-            <div class="modal-header text-white px-4 py-3 border-0" style="background:var(--primary);">
-                <div>
-                    <h5 class="modal-title fw-bold mb-0" style="font-family:'Inter',sans-serif;">Minta Penawaran Harga</h5>
-                    <small style="color:rgba(255,255,255,0.55);">Isi formulir dan tim kami akan segera menghubungi Anda.</small>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4" style="background:var(--bg);">
-                <form>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Nama Lengkap *</label>
-                            <input type="text" class="form-control" placeholder="Nama Anda" style="border-radius:8px;font-size:0.9rem;" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Nama Perusahaan *</label>
-                            <input type="text" class="form-control" placeholder="PT. Nama Perusahaan" style="border-radius:8px;font-size:0.9rem;" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Alamat Email *</label>
-                            <input type="email" class="form-control" placeholder="email@perusahaan.com" style="border-radius:8px;font-size:0.9rem;" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Nomor Telepon *</label>
-                            <input type="tel" class="form-control" placeholder="+62 8xx xxxx xxxx" style="border-radius:8px;font-size:0.9rem;" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Jenis Produk *</label>
-                            <select class="form-select" style="border-radius:8px;font-size:0.9rem;" required>
-                                <option value="" disabled selected>Pilih Produk</option>
-                                <option>Seri Ball Valve</option>
-                                <option>Buttweld Fittings</option>
-                                <option>Pressure Gauge</option>
-                                <option>Pressure Reducing Valve</option>
-                                <option>Komponen Lainnya</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Estimasi Jumlah</label>
-                            <input type="text" class="form-control" placeholder="Contoh: 50 Unit" style="border-radius:8px;font-size:0.9rem;">
-                        </div>
-                        <div class="col-12">
-                            <label style="font-size:0.8rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.35rem;">Kebutuhan Tambahan</label>
-                            <textarea class="form-control" rows="3" placeholder="Persyaratan teknis, jadwal pengiriman, atau detail lainnya..." style="border-radius:8px;font-size:0.9rem;"></textarea>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <button type="submit" class="btn-dl" style="border-radius:10px;display:flex;align-items:center;justify-content:center;gap:0.5rem;cursor:pointer;">
-                            <i class="fa-solid fa-paper-plane"></i> Kirim Permintaan Penawaran
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="js/bootstrap.bundle.min.js"></script>
 <script>
