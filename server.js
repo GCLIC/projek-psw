@@ -559,8 +559,10 @@ app.post('/add-to-cart', (req, res) => {
         req.session.cart = [];
     }
 
-    // Push the selected item into the session memory
-    req.session.cart.push({ id: product_id, name: product_name, qty: 1 });
+    // Merge with existing entry — duplicates break qty buttons and order_detail inserts
+    const existing = req.session.cart.find(i => String(i.id) === String(product_id));
+    if (existing) existing.qty += 1;
+    else req.session.cart.push({ id: product_id, name: product_name, qty: 1 });
 
     // Send them back to the catalog silently
     res.redirect('/dashboard/products');

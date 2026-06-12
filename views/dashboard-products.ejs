@@ -48,14 +48,15 @@
         .product-card:hover::before { opacity: 1; }
 
         .product-img-box {
-            height: 180px; background: var(--surface-2);
+            height: 180px; background: #fff;
             display: flex; align-items: center; justify-content: center;
             padding: 1.25rem; border-bottom: 1px solid var(--border); flex-shrink: 0;
             position: relative; overflow: hidden;
         }
-        html[data-theme="dark"] .product-img-box { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
-        .product-img-box img { max-height: 100%; max-width: 100%; object-fit: contain; transition: transform 0.3s; }
+        html[data-theme="dark"] .product-img-box { border-color: rgba(255,255,255,0.06); }
+        .product-img-box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s; }
         .product-card:hover .product-img-box img { transform: scale(1.05); }
+        .img-fallback { font-size: 2.5rem; color: #cbd5e1; }
 
         .product-body { padding: 1.25rem; display: flex; flex-direction: column; flex: 1; }
         .product-sku {
@@ -187,9 +188,13 @@
                 <div class="col-12 col-sm-6 col-xl-4 product-item">
                     <div class="product-card">
                         <div class="product-img-box">
-                            <img src="/images/<%= encodeURIComponent(product.Img_Url) %>"
-                                 onerror="this.style.display='none';this.parentElement.innerHTML+='<i class=\'fa-solid fa-box\' style=\'font-size:2.5rem;color:#cbd5e1;\'></i>'"
-                                 alt="<%= product.Product_Name %>">
+                            <% if (product.Img_Url) { %>
+                                <img src="/images/<%= encodeURIComponent(product.Img_Url) %>"
+                                     onerror="this.outerHTML='<i class=\'fa-solid fa-box img-fallback\'></i>'"
+                                     alt="<%= product.Product_Name %>">
+                            <% } else { %>
+                                <i class="fa-solid fa-box img-fallback"></i>
+                            <% } %>
                         </div>
                         <div class="product-body">
                             <span class="product-sku">SKU-<%= String(product.Product_ID).padStart(3,'0') %></span>

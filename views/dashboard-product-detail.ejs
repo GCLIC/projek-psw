@@ -31,11 +31,12 @@
 
         .img-main {
             height: 300px; display: flex; align-items: center; justify-content: center;
-            padding: 2rem; background: var(--surface-2);
+            padding: 2rem; background: #fff;
             border-bottom: 1px solid var(--border);
         }
-        html[data-theme="dark"] .img-main { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
-        .img-main img { max-height: 100%; max-width: 100%; object-fit: contain; }
+        html[data-theme="dark"] .img-main { border-color: rgba(255,255,255,0.06); }
+        .img-main img { width: 100%; height: 100%; object-fit: contain; }
+        .img-fallback { font-size: 5rem; color: #cbd5e1; }
 
         .img-footer { padding: 1.25rem 1.5rem; }
         .img-footer .product-price {
@@ -192,9 +193,13 @@
         <!-- Image Panel -->
         <div class="img-panel">
             <div class="img-main">
-                <img src="/images/<%= encodeURIComponent(product.Img_Url) %>"
-                     onerror="this.style.display='none';this.parentElement.innerHTML+='<i class=\'fa-solid fa-box\' style=\'font-size:5rem;color:#cbd5e1;\'></i>'"
-                     alt="<%= product.Product_Name %>">
+                <% if (product.Img_Url) { %>
+                    <img src="/images/<%= encodeURIComponent(product.Img_Url) %>"
+                         onerror="this.outerHTML='<i class=\'fa-solid fa-box img-fallback\'></i>'"
+                         alt="<%= product.Product_Name %>">
+                <% } else { %>
+                    <i class="fa-solid fa-box img-fallback"></i>
+                <% } %>
             </div>
             <div class="img-footer">
                 <% if (product.Unit_Price && product.Unit_Price > 0) { %>
